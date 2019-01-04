@@ -1,0 +1,130 @@
+
+
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, warning = FALSE, message = FALSE)
+#knitr::opts_knit$set(root.dir=normalizePath('../'))
+```
+
+# Data Import and Wrangling
+
+### Load libraries
+```{r}
+library(httr)
+library(tidyverse)
+library(janitor)
+```
+
+
+### Get Data directly from OSF
+```{r}
+if (!file.exists('kayla.xlsx')) {
+   data <- GET('osf.io/xnfg5//?action=download',
+                write_disk('kayla.xlsx'))#, overwrite = TRUE))
+}
+
+# get data and clean
+kayla.tb <- readxl::read_excel('kayla.xlsx') %>%
+kayla.tb <- kayla.tb %>%  
+  clean_names()
+# saved it as an .rds
+saveRDS(kayla.tb, file = "kayla.rds")
+```
+
+### Open the Saved Data
+
+```{r}
+kayla.tb  <- read_rds("kayla.rds")
+```
+
+
+### Summarize SASB
+```{r}
+
+# Reliability
+
+```
+
+
+### Summarize PANAS
+```{r}
+
+# Reliability
+
+```
+
+
+### Add depressive versus stimulant category to data
+```{r}
+
+```
+
+# Hypothesis Testing
+
+## Hypothesis 1: Participants seeking treatment for substance abuse will report greater hoped-for affiliation in a reported significant-other relationship following use of their substance of choice compared to participants not seeking treatment for substance abuse. (Do not analyze drug of choice as stated in data analytic plan)
+
+1a. Paired t-test and visualization for entire sample
+```{r}
+# 1. First, general paired t-tests for sostaff (sign other to subject transitive affiliation), ssotaff (subject to sign other transitive affiliation), sosiaff (sign other to subject intransitive affiliation), ssoiaff (subject to sign other intransitive affiliation)
+library(widyr)
+
+
+```
+
+
+1b. Residual change and differences by experimental (substance) and control (nonubstance) groups
+```{r extract and save residuals}
+
+```
+
+```{r regression}
+
+```
+
+
+
+## Hypothesis 2: Adolescents who reported depressants (alcohol, marijuana, narcotics) as their drug of choice will rate their significant others as more sulking and resentful prior to using compared to adolescents who do not report depressants as their drug of choice. 
+```{r}
+
+```
+
+
+## Hypothesis 3: Participants seeking treatment for substance abuse will report greater hoped-for introject (self-concept) affiliation following use of their substance of choice compared to participants not seeking treatment for substance abuse.
+```{r}
+
+```
+
+## Hypothesis 4: Participants seeking treatment for substance abuse will report less negative affect following use of their substance of choice compared to participants not seeking treatment for substance abuse.
+```{r}
+
+```
+
+
+## Hypothesis 5: Participants not seeking treatment for substance abuse will report greater positive affect following substance use compared to participants seeking treatment for substance abuse.
+```{r}
+
+```
+
+## Hypothesis 6: Exploratory analyses will examine change in relationship and emotions associated with parental monitoring, peer acceptance, and diagnostic group.
+```{r}
+
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
