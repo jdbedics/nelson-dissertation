@@ -244,7 +244,7 @@ library(widyr)
 
 
 3. Calculate Residuals from SASB Data SOSIAUT, SSOIAFF, SSOIAUT
-```{r SOSIAUT RES, echo=FALSE}
+```{r SOSIAUT RES, }
 # https://cran.r-project.org/web/packages/broom/vignettes/broom.html
 dimensions <- kayla_processed %>%
   select(client_number, group, i_c, i_a, survey, gender, c(212:231))
