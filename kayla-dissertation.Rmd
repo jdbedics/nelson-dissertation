@@ -34,7 +34,7 @@ Get Data directly from OSF and then save it as a .rds file.  You need to run thi
 
 Open the Saved Data.  You'll likely run this everytime as long as you close your R project.  Make sure you're working in your R project.  The top right shoudl have a blue cube that says "dissertation", if i'm remembering correctly.
 ```{r open data}
-kayla_tb  <- read_rds("kayla.rds")
+kayla_raw  <- read_rds("kayla.rds")
 ```
 
 
@@ -42,11 +42,10 @@ kayla_tb  <- read_rds("kayla.rds")
 
 Rename the SASB variables in the excel to match the SASB clusters.  
 ```{r rename sasb variables}
-
 # we rename introject first
-
-kayla_processed <- kayla_tb %>%
-  rename(intcl1b = sasb_1, intcl2b = sasb_6,
+kayla_processed <- kayla_raw %>%
+  rename(intcl1b = sasb_1, 
+         intcl2b = sasb_6,
          intcl3b = sasb_3,
          intcl4b = sasb_4,
          intcl5b = sasb_8,
@@ -131,58 +130,154 @@ kayla_processed <- kayla_tb %>%
          ssoicl5a = sasb_fa26,
          ssoicl6a = sasb_fa23,
          ssoicl7a = sasb_fa32,
-         ssoicl8a = sasb_fa18)
-
-#  below, try and do the same as above for parent.  remmember the numbers are the same, just the letters need to switch from 'fa' and 'fp' to 'pp' and 'pa'.
-# if you want really want it to work, then notice that you'll have to take the parentheses off after the last one above `sasb_fa18` and add a comma.  The parenthese was ending it but since you're adding some you have to take that off, add a comma, and then put the parenthes back on when you're done.
-
+         ssoicl8a = sasb_fa18,
+    
+     # renaming parent first 16 for pre 
+    
+         psostcl1p = sasb_pp14,
+         psostcl2p = sasb_pp1,
+         psostcl3p = sasb_pp6,
+         psostcl4p = sasb_pp13,
+         psostcl5p = sasb_pp9,
+         psostcl6p = sasb_pp3,
+         psostcl7p = sasb_pp12,
+         psostcl8p = sasb_pp4,
+         psosicl1p = sasb_pp11,
+         psosicl2p = sasb_pp8,
+         psosicl3p = sasb_pp15,
+         psosicl4p = sasb_pp5,
+         psosicl5p = sasb_pp10,
+         psosicl6p = sasb_pp7,
+         psosicl7p = sasb_pp16,
+         psosicl8p = sasb_pp2,
+    # renaming parent second 16 for pre
+         pssotcl1p = sasb_pp30,
+         pssotcl2p = sasb_pp17,
+         pssotcl3p = sasb_pp22,
+         pssotcl4p = sasb_pp29,
+         pssotcl5p = sasb_pp25,
+         pssotcl6p = sasb_pp19,
+         pssotcl7p = sasb_pp28,
+         pssotcl8p = sasb_pp20,
+         pssoicl1p = sasb_pp27,
+         pssoicl2p = sasb_pp24,
+         pssoicl3p = sasb_pp31,
+         pssoicl4p = sasb_pp21,
+         pssoicl5p = sasb_pp26,
+         pssoicl6p = sasb_pp23,
+         pssoicl7p = sasb_pp32,
+         pssoicl8p = sasb_pp18,
+    
+    # renaming parent first 16 for after
+    
+         psostcl1a = sasb_pa14,
+         psostcl2a = sasb_pa1,
+         psostcl3a = sasb_pa6,
+         psostcl4a = sasb_pa13,
+         psostcl5a = sasb_pa9,
+         psostcl6a = sasb_pa3,
+         psostcl7a = sasb_pa12,
+         psostcl8a = sasb_pa4,
+         psosicl1a = sasb_pa11,
+         psosicl2a = sasb_pa8,
+         psosicl3a = sasb_pa15,
+         psosicl4a = sasb_pa5,
+         psosicl5a = sasb_pa10,
+         psosicl6a = sasb_pa7,
+         psosicl7a = sasb_pa16,
+         psosicl8a = sasb_pa2,
+    
+# second parent sixteen for after     
+         pssotcl1a = sasb_pa30,
+         pssotcl2a = sasb_pa17,
+         pssotcl3a = sasb_pa22,
+         pssotcl4a = sasb_pa29,
+         pssotcl5a = sasb_pa25,
+         pssotcl6a = sasb_pa19,
+         pssotcl7a = sasb_pa28,
+         pssotcl8a = sasb_pa20,
+         pssoicl1a = sasb_pa27,
+         pssoicl2a = sasb_pa24,
+         pssoicl3a = sasb_pa31,
+         pssoicl4a = sasb_pa21,
+         pssoicl5a = sasb_pa26,
+         pssoicl6a = sasb_pa23,
+         pssoicl7a = sasb_pa32,
+         pssoicl8a = sasb_pa18)
 ```
 
 
 
 The following creates weighted summary scores for SASB Affiliation and Autonomy by SASB surface.
 ```{r SASB weighted summary scores}
-###### 1. Introject Pre (introject)
-## Affiliation
-kayla_processed <- kayla_processed %>%
+###### 1. Introject
+int <-  kayla_processed %>%
   mutate(intaffb = (intcl1b*0) + (intcl2b*4.5) + (intcl3b*7.8) + (intcl4b*4.5) + (intcl5b*0) + (intcl6b*-4.5) + (intcl7b*-7.8) + (intcl8b*-4.5),
          intautb = (intcl1b*7.8) + (intcl2b*4.5) + (intcl3b*0) + (intcl4b*-4.5) + (intcl5b*-7.8) + (intcl6b*-4.5) + (intcl7b*0) + (intcl8b*4.5),
          intaffw = (intcl1w*0) + (intcl2w*4.5) + (intcl3w*7.8) + (intcl4w*4.5) + (intcl5w*0) + (intcl6w*-4.5) + (intcl7w*-7.8) + (intcl8w*-4.5),
-         intautw = (intcl1w*7.8) + (intcl2w*4.5) + (intcl3w*0) + (intcl4w*-4.5) + (intcl5w*-7.8) + (intcl6w*-4.5) + (intcl7w*0) + (intcl8w*4.5),
+         intautw = (intcl1w*7.8) + (intcl2w*4.5) + (intcl3w*0) + (intcl4w*-4.5) + (intcl5w*-7.8) + (intcl6w*-4.5) + (intcl7w*0) + (intcl8w*4.5)) %>%
+  select(client_number, intaffb, intautb, intaffw, intautw)
 
-          # significant other (friend) focused on subject - affiliation pre and autonomy pre scores
-         sostaffp = (sostcl1p*0) + (sostcl2p*4.5) + (sostcl3p*7.8) + (sostcl4p*4.5) + (sostcl5p*0) + (sostcl6p*-4.5) + (sostcl7p*-7.8) + (sostcl8p*-4.5),
+# SOST/SOSI PRE
+sosp <- kayla_processed %>%
+  mutate(sostaffp = (sostcl1p*0) + (sostcl2p*4.5) + (sostcl3p*7.8) + (sostcl4p*4.5) + (sostcl5p*0) + (sostcl6p*-4.5) + (sostcl7p*-7.8) + (sostcl8p*-4.5),
          sostautp = (sostcl1p*7.8) + (sostcl2p*4.5) + (sostcl3p*0) + (sostcl4p*-4.5) + (sostcl5p*-7.8) + (sostcl6p*-4.5) + (sostcl7p*0) + (sostcl8p*4.5),
          # significant other reacting to subjects - affiliation and pre and autonomy pre
          sosiaffp = (sosicl1p*0) + (sosicl2p*4.5) + (sosicl3p*7.8) + (sosicl4p*4.5) + (sosicl5p*0) + (sosicl6p*-4.5) + (sosicl7p*-7.8) + (sosicl8p*-4.5),
-         sosiautp = (sosicl1p*7.8) + (sosicl2p*4.5) + (sosicl3p*0) + (sosicl4p*-4.5) + (sosicl5p*-7.8) + (sosicl6p*-4.5) + (sosicl7p*0) + (sosicl8p*4.5),
+         sosiautp = (sosicl1p*7.8) + (sosicl2p*4.5) + (sosicl3p*0) + (sosicl4p*-4.5) + (sosicl5p*-7.8) + (sosicl6p*-4.5) + (sosicl7p*0) + (sosicl8p*4.5)) %>%
+  select(client_number, sostaffp, sostautp, sosiaffp, sosiautp)
          
-         # subject acting towards significant other - affiliation pre and autonomy pre
-        ssotaffp = (ssotcl1p*0) + (ssotcl2p*4.5) + (ssotcl3p*7.8) + (ssotcl4p*4.5) + (ssotcl5p*0) + (ssotcl6p*-4.5) + (ssotcl7p*-7.8) + (sostcl8p*-4.5),
+# SSOT/SSOI PRE --------------------
+ssop <- kayla_processed %>%
+  mutate(ssotaffp = (ssotcl1p*0) + (ssotcl2p*4.5) + (ssotcl3p*7.8) + (ssotcl4p*4.5) + (ssotcl5p*0) + (ssotcl6p*-4.5) + (ssotcl7p*-7.8) + (sostcl8p*-4.5),
          ssotautp = (ssotcl1p*7.8) + (ssotcl2p*4.5) + (ssotcl3p*0) + (ssotcl4p*-4.5) + (ssotcl5p*-7.8) + (ssotcl6p*-4.5) + (ssotcl7p*0) + (ssotcl8p*4.5),
          # subject reacting towards significant other - affiliation pre and autonomy pre
         ssoiaffp = (ssoicl1p*0) + (ssoicl2p*4.5) + (ssoicl3p*7.8) + (ssoicl4p*4.5) + (ssoicl5p*0) + (ssoicl6p*-4.5) + (ssoicl7p*-7.8) + (sostcl8p*-4.5),
-         ssoiautp = (ssoicl1p*7.8) + (ssoicl2p*4.5) + (ssoicl3p*0) + (ssoicl4p*-4.5) + (ssoicl5p*-7.8) + (ssoicl6p*-4.5) + (ssoicl7p*0) + (ssoicl8p*4.5),
+         ssoiautp = (ssoicl1p*7.8) + (ssoicl2p*4.5) + (ssoicl3p*0) + (ssoicl4p*-4.5) + (ssoicl5p*-7.8) + (ssoicl6p*-4.5) + (ssoicl7p*0) + (ssoicl8p*4.5)) %>%
+  select(client_number, ssotaffp, ssotautp, ssoiaffp, ssoiautp)
 
-        ##### after ##############        
-        
-          # significant other (friend) focused on subject - affiliation after and autonomy after scores
-         sostaffa = (sostcl1a*0) + (sostcl2a*4.5) + (sostcl3a*7.8) + (sostcl4a*4.5) + (sostcl5a*0) + (sostcl6a*-4.5) + (sostcl7a*-7.8) + (sostcl8a*-4.5),
+# SOST-SOSI AFTER       
+sosa <- kayla_processed %>%
+  mutate(sostaffa = (sostcl1a*0) + (sostcl2a*4.5) + (sostcl3a*7.8) + (sostcl4a*4.5) + (sostcl5a*0) + (sostcl6a*-4.5) + (sostcl7a*-7.8) + (sostcl8a*-4.5),
          sostauta = (sostcl1a*7.8) + (sostcl2a*4.5) + (sostcl3a*0) + (sostcl4a*-4.5) + (sostcl5a*-7.8) + (sostcl6a*-4.5) + (sostcl7a*0) + (sostcl8a*4.5),
          # significant other reacting to subjects - affiliation and after and autonomy after
          sosiaffa = (sosicl1a*0) + (sosicl2a*4.5) + (sosicl3a*7.8) + (sosicl4a*4.5) + (sosicl5a*0) + (sosicl6a*-4.5) + (sosicl7a*-7.8) + (sosicl8a*-4.5),
-         sosiauta = (sosicl1a*7.8) + (sosicl2a*4.5) + (sosicl3a*0) + (sosicl4a*-4.5) + (sosicl5a*-7.8) + (sosicl6a*-4.5) + (sosicl7a*0) + (sosicl8a*4.5),
+         sosiauta = (sosicl1a*7.8) + (sosicl2a*4.5) + (sosicl3a*0) + (sosicl4a*-4.5) + (sosicl5a*-7.8) + (sosicl6a*-4.5) + (sosicl7a*0) + (sosicl8a*4.5)) %>%
+  select(client_number, sostaffa, sostauta, sosiaffa, sosiauta)
          
-         # subject acting towards significant other - affiliation after and autonomy after
-        ssotaffa = (ssotcl1a*0) + (ssotcl2a*4.5) + (ssotcl3a*7.8) + (ssotcl4a*4.5) + (ssotcl5a*0) + (ssotcl6a*-4.5) + (ssotcl7a*-7.8) + (sostcl8a*-4.5),
+# SSOT-SOSI AFTER
+ssoa <- kayla_processed %>%
+  mutate(ssotaffa = (ssotcl1a*0) + (ssotcl2a*4.5) + (ssotcl3a*7.8) + (ssotcl4a*4.5) + (ssotcl5a*0) + (ssotcl6a*-4.5) + (ssotcl7a*-7.8) + (sostcl8a*-4.5),
          ssotauta = (ssotcl1a*7.8) + (ssotcl2a*4.5) + (ssotcl3a*0) + (ssotcl4a*-4.5) + (ssotcl5a*-7.8) + (ssotcl6a*-4.5) + (ssotcl7a*0) + (ssotcl8a*4.5),
          # subject reacting towards significant other - affiliation after and autonomy after
         ssoiaffa = (ssoicl1a*0) + (ssoicl2a*4.5) + (ssoicl3a*7.8) + (ssoicl4a*4.5) + (ssoicl5a*0) + (ssoicl6a*-4.5) + (ssoicl7a*-7.8) + (sostcl8a*-4.5),
-         ssoiauta = (ssoicl1a*7.8) + (ssoicl2a*4.5) + (ssoicl3a*0) + (ssoicl4a*-4.5) + (ssoicl5a*-7.8) + (ssoicl6a*-4.5) + (ssoicl7a*0) + (ssoicl8a*4.5))
+         ssoiauta = (ssoicl1a*7.8) + (ssoicl2a*4.5) + (ssoicl3a*0) + (ssoicl4a*-4.5) + (ssoicl5a*-7.8) + (ssoicl6a*-4.5) + (ssoicl7a*0) + (ssoicl8a*4.5)) %>%
+  select(client_number, ssotaffa, ssotauta, ssoiaffa, ssoiauta)
 
+
+
+
+### --------- Kalya - add parents here and follow the pattern above ----------- #####
+
+# PSOST-PSOSI PRE
+
+# PSSOT-PSSOI PRE
+
+# PSOST-PSOSI After
+
+# PSSOT-PSSOI After
 
 
 ```
+
+Create trimmed down coefficient table
+```{r}
+int %>% inner_join(int, sosp, ssop, sosa, ssoa)
+
+bind_cols(int, sosp, ssop, sosa, ssoa) %>% 
+  select(-client_number1, -client_number2, -client_number3, -client_number4)
+```
+
 
 Summarize PANAS from Kayla
 ```{r panas subscales}
@@ -232,7 +327,51 @@ CronbachAlpha(panasnegafter.df) # .87
 1a. Paired t-test and visualization for entire sample
 ```{r}
 # 1. First, general paired t-tests for sostaff (sign other to subject transitive affiliation), ssotaff (subject to sign other transitive affiliation), sosiaff (sign other to subject intransitive affiliation), ssoiaff (subject to sign other intransitive affiliation)
-library(widyr)
+
+library(broom)
+library(tibble)
+
+Orange <- as_tibble(Orange)
+
+
+
+library(dplyr)
+
+Orange %>% 
+  group_by(Tree) %>%
+  summarize(correlation = cor(age, circumference))
+
+ct <- cor.test(Orange$age, Orange$circumference)
+ct
+tidy(ct)
+
+library(tidyr)
+
+orange %>% count(Tree)
+
+nested <- Orange %>% 
+  nest(-Tree)
+
+library(purrr)
+
+nested %>% 
+  mutate(test = map(data, ~ cor.test(.x$age, .x$circumference)))
+
+nested %>% 
+  mutate(
+    test = map(data, ~ cor.test(.x$age, .x$circumference)), # S3 list-col
+    tidied = map(test, tidy)
+  ) 
+
+
+Orange %>% 
+  nest(-Tree) %>% 
+  mutate(
+    test = map(data, ~ cor.test(.x$age, .x$circumference)), # S3 list-col
+    tidied = map(test, tidy)
+  ) %>% 
+  unnest(tidied, .drop = TRUE)
+
 
 
 ```
