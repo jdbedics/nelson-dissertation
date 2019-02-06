@@ -272,11 +272,13 @@ ssoa <- kayla_processed %>%
 
 ```
 
-Create trimmed down coefficient table
-```{r}
+
+```{r SASB weights Long Format}
+# Create trimmed down coefficient table
 coefficients <- bind_cols(int, sosp, ssop, sosa, ssoa) %>% 
   select(-client_number1, -client_number2, -client_number3, -client_number4)
 
+# create long file to do multiple t-tests.
 coefficents_long <- coefficients %>%
   gather(key, value, -client_number, -group) %>% 
   extract(key, c("surface", "state"), "(surf\\_.*)\\_(.)") %>%
@@ -300,7 +302,7 @@ kayla_processed$panas2_2 <- kayla_processed$panas_a2+  kayla_processed$panas_a4+
 ```
 
 Calculate the Reliability for the PANAS.  You would need to install the package `fmsb`
-```{r}
+```{r PANAS Reliability}
 # Positive Affect Score - Prior
 panaspospre.df <- kayla_tb[ , c("panas_p1", "panas_p3", "panas_p5", "panas_p9", "panas_p12", "panas_p14", "panas_p16", "panas_p17", "panas_p19")] 
 CronbachAlpha(panaspospre.df) 
@@ -423,11 +425,15 @@ kayla_processed
 
 
 ## Hypothesis 5: Participants not seeking treatment for substance abuse will report greater positive affect following substance use compared to participants seeking treatment for substance abuse.
-```{r select panas data}
+
+
+
+```{r select panas data, echo=FALSE}
+# Make a smaller version of data focused on PANAS
 panas_data <- kayla_processed %>% select(client_number, group, panas1_1, panas1_2, panas2_1, panas2_2)
 ```
 
-```{r calculate panas residuals}
+```{r calculate panas residuals, echo=FALSE}
 # calculate positive residual change
 panas1_fit <- lm(panas1_2 ~ panas1_1, data = panas_data)
 resid1 <- augment(panas1_fit)
@@ -444,19 +450,108 @@ resid2_2 <- resid2 %>%
   select(.std.resid) %>%
   rename(panas2_res = .std.resid)
 
+#create a data file with residuals added 
 panas_processed <- panas_data %>% bind_cols(resid1_2, resid2_2)
 ```
 
+### Summary Statistics for PANAS
 
+Mean and Standard Deviations by Group
 ```{r}
-panas_processed %>%
-  gather(type, value, panas1_res, panas2_res, -client_number) %>% View()
-  ggplot()
+panas_data %>%
+  group_by(group) %>%
+  summarise(pos_pre_mean = mean(panas1_1),
+            pos_post_mean = mean(panas1_2),
+            neg_pre_mean = mean(panas2_1),
+            neg_post_mean = mean(panas2_2),
+            pos_pre_sd = sd(panas1_1),
+            pos_pos_sd = sd(panas1_2),
+            neg_pre_sd = sd(panas2_1),
+            neg_post_sd = sd(panas2_2)) %>%
+  knitr::kable()
+```
+
+Minimum and Maxiumum for PANAS Positive and Negative
+```{r}
+panas_data %>%
+  group_by(group) %>%
+  summarise(pos_pre_min = min(panas1_1),
+            pos_pos_min = min(panas1_2),
+            neg_pre_min = min(panas2_1),
+            neg_post_min = min(panas2_2),
+            pos_pre_max = max(panas1_1),
+            pos_pos_max = max(panas1_2),
+            neg_pre_max = max(panas2_1),
+            neg_post_max = max(panas2_2)) %>%
+  knitr::kable()
 ```
 
 
+### Visualize PANAS Change
 
-Model PANAS Data
+
+#### Distributions of PANAS
+
+Empirical Cumulative Distribution Function for Positive (kayla, look this up for interpretation)
+```{r}
+panas_data %>%
+  ggplot(aes(panas1_1, group=group)) +
+  stat_ecdf(aes(color=group)) +
+  ggtitle("ECDF for Positive at Pre")
+
+panas_data %>%
+  ggplot(aes(panas1_2, group=group)) +
+  stat_ecdf(aes(color=group)) +
+  ggtitle("ECDF for Positive at Post")
+```
+Interpret:
+
+Empirical Cumulative Distribution Function for Negative (Kayla - you do this one)
+```{r}
+```
+Interpret: 
+
+#### PANAS Positive Change Overall
+```{r}
+panas_data %>% 
+  gather(panas_positive, score, panas1_1, panas1_2, -client_number) %>%
+  ggplot(aes(x=panas_positive, y=score, group=panas_positive)) +
+  geom_boxplot() +
+  geom_jitter(aes(color=panas_positive)) 
+```
+
+#### PANAS Positive Change by Group
+```{r}
+panas_data %>% 
+  gather(panas_positive, score, panas1_1, panas1_2, -client_number) %>%
+  ggplot(aes(x=panas_positive, y=score, group=panas_positive)) +
+  geom_boxplot() +
+  geom_jitter(aes(color=panas_positive)) +
+  facet_wrap(~group)
+```
+
+
+#### PANAS Negative Affect Change
+```{r}
+panas_data %>% 
+  gather(panas_negative, score, panas2_1, panas2_2, -client_number) %>%
+  ggplot(aes(x=panas_negative, y=score, group=panas_negative)) +
+  geom_boxplot() +
+  geom_jitter(aes(color=panas_negative)) 
+```
+
+#### PANAS Negative Affect Change by Group
+```{r}
+panas_data %>% 
+  gather(panas_negative, score, panas2_1, panas2_2, -client_number) %>%
+  ggplot(aes(x=panas_negative, y=score, group=panas_negative)) +
+  geom_boxplot() +
+  geom_jitter(aes(color=panas_negative)) +
+  facet_wrap(~group)
+```
+
+### Model PANAS Data
+
 ```{r}
 positive_fit <- lm(panas1_res ~ group, data = panas_processed)
 negative_fit <- lm(panas2_res ~ group, data = panas_processed)
