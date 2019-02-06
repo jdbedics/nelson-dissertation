@@ -212,47 +212,49 @@ The following creates weighted summary scores for SASB Affiliation and Autonomy 
 ```{r SASB weighted summary scores}
 ###### 1. Introject
 int <-  kayla_processed %>%
-  mutate(intaffb = (intcl1b*0) + (intcl2b*4.5) + (intcl3b*7.8) + (intcl4b*4.5) + (intcl5b*0) + (intcl6b*-4.5) + (intcl7b*-7.8) + (intcl8b*-4.5),
-         intautb = (intcl1b*7.8) + (intcl2b*4.5) + (intcl3b*0) + (intcl4b*-4.5) + (intcl5b*-7.8) + (intcl6b*-4.5) + (intcl7b*0) + (intcl8b*4.5),
-         intaffw = (intcl1w*0) + (intcl2w*4.5) + (intcl3w*7.8) + (intcl4w*4.5) + (intcl5w*0) + (intcl6w*-4.5) + (intcl7w*-7.8) + (intcl8w*-4.5),
-         intautw = (intcl1w*7.8) + (intcl2w*4.5) + (intcl3w*0) + (intcl4w*-4.5) + (intcl5w*-7.8) + (intcl6w*-4.5) + (intcl7w*0) + (intcl8w*4.5)) %>%
-  select(client_number, intaffb, intautb, intaffw, intautw)
+  mutate(surf_1_1 = (intcl1b*0) + (intcl2b*4.5) + (intcl3b*7.8) + (intcl4b*4.5) + (intcl5b*0) + (intcl6b*-4.5) + (intcl7b*-7.8) + (intcl8b*-4.5),
+         surf_2_1 = (intcl1b*7.8) + (intcl2b*4.5) + (intcl3b*0) + (intcl4b*-4.5) + (intcl5b*-7.8) + (intcl6b*-4.5) + (intcl7b*0) + (intcl8b*4.5),
+         surf_1_2 = (intcl1w*0) + (intcl2w*4.5) + (intcl3w*7.8) + (intcl4w*4.5) + (intcl5w*0) + (intcl6w*-4.5) + (intcl7w*-7.8) + (intcl8w*-4.5),
+         surf_2_2 = (intcl1w*7.8) + (intcl2w*4.5) + (intcl3w*0) + (intcl4w*-4.5) + (intcl5w*-7.8) + (intcl6w*-4.5) + (intcl7w*0) + (intcl8w*4.5)) %>%
+  select(client_number, group, surf_1_1, surf_1_2, surf_2_1, surf_2_2)
+
 
 # SOST/SOSI PRE
 sosp <- kayla_processed %>%
-  mutate(sostaffp = (sostcl1p*0) + (sostcl2p*4.5) + (sostcl3p*7.8) + (sostcl4p*4.5) + (sostcl5p*0) + (sostcl6p*-4.5) + (sostcl7p*-7.8) + (sostcl8p*-4.5),
-         sostautp = (sostcl1p*7.8) + (sostcl2p*4.5) + (sostcl3p*0) + (sostcl4p*-4.5) + (sostcl5p*-7.8) + (sostcl6p*-4.5) + (sostcl7p*0) + (sostcl8p*4.5),
+  mutate(surf_3_1 = (sostcl1p*0) + (sostcl2p*4.5) + (sostcl3p*7.8) + (sostcl4p*4.5) + (sostcl5p*0) + (sostcl6p*-4.5) + (sostcl7p*-7.8) + (sostcl8p*-4.5),
+         surf_4_1 = (sostcl1p*7.8) + (sostcl2p*4.5) + (sostcl3p*0) + (sostcl4p*-4.5) + (sostcl5p*-7.8) + (sostcl6p*-4.5) + (sostcl7p*0) + (sostcl8p*4.5),
          # significant other reacting to subjects - affiliation and pre and autonomy pre
-         sosiaffp = (sosicl1p*0) + (sosicl2p*4.5) + (sosicl3p*7.8) + (sosicl4p*4.5) + (sosicl5p*0) + (sosicl6p*-4.5) + (sosicl7p*-7.8) + (sosicl8p*-4.5),
-         sosiautp = (sosicl1p*7.8) + (sosicl2p*4.5) + (sosicl3p*0) + (sosicl4p*-4.5) + (sosicl5p*-7.8) + (sosicl6p*-4.5) + (sosicl7p*0) + (sosicl8p*4.5)) %>%
-  select(client_number, sostaffp, sostautp, sosiaffp, sosiautp)
-         
+         surf_5_1 = (sosicl1p*0) + (sosicl2p*4.5) + (sosicl3p*7.8) + (sosicl4p*4.5) + (sosicl5p*0) + (sosicl6p*-4.5) + (sosicl7p*-7.8) + (sosicl8p*-4.5),
+         surf_6_1 = (sosicl1p*7.8) + (sosicl2p*4.5) + (sosicl3p*0) + (sosicl4p*-4.5) + (sosicl5p*-7.8) + (sosicl6p*-4.5) + (sosicl7p*0) + (sosicl8p*4.5)) %>%
+  select(client_number, surf_3_1, surf_4_1, surf_5_1, surf_6_1)
+
+
 # SSOT/SSOI PRE --------------------
 ssop <- kayla_processed %>%
-  mutate(ssotaffp = (ssotcl1p*0) + (ssotcl2p*4.5) + (ssotcl3p*7.8) + (ssotcl4p*4.5) + (ssotcl5p*0) + (ssotcl6p*-4.5) + (ssotcl7p*-7.8) + (sostcl8p*-4.5),
-         ssotautp = (ssotcl1p*7.8) + (ssotcl2p*4.5) + (ssotcl3p*0) + (ssotcl4p*-4.5) + (ssotcl5p*-7.8) + (ssotcl6p*-4.5) + (ssotcl7p*0) + (ssotcl8p*4.5),
+  mutate(surf_7_1 = (ssotcl1p*0) + (ssotcl2p*4.5) + (ssotcl3p*7.8) + (ssotcl4p*4.5) + (ssotcl5p*0) + (ssotcl6p*-4.5) + (ssotcl7p*-7.8) + (sostcl8p*-4.5),
+         surf_8_1 = (ssotcl1p*7.8) + (ssotcl2p*4.5) + (ssotcl3p*0) + (ssotcl4p*-4.5) + (ssotcl5p*-7.8) + (ssotcl6p*-4.5) + (ssotcl7p*0) + (ssotcl8p*4.5),
          # subject reacting towards significant other - affiliation pre and autonomy pre
-        ssoiaffp = (ssoicl1p*0) + (ssoicl2p*4.5) + (ssoicl3p*7.8) + (ssoicl4p*4.5) + (ssoicl5p*0) + (ssoicl6p*-4.5) + (ssoicl7p*-7.8) + (sostcl8p*-4.5),
-         ssoiautp = (ssoicl1p*7.8) + (ssoicl2p*4.5) + (ssoicl3p*0) + (ssoicl4p*-4.5) + (ssoicl5p*-7.8) + (ssoicl6p*-4.5) + (ssoicl7p*0) + (ssoicl8p*4.5)) %>%
-  select(client_number, ssotaffp, ssotautp, ssoiaffp, ssoiautp)
+        surf_9_1 = (ssoicl1p*0) + (ssoicl2p*4.5) + (ssoicl3p*7.8) + (ssoicl4p*4.5) + (ssoicl5p*0) + (ssoicl6p*-4.5) + (ssoicl7p*-7.8) + (sostcl8p*-4.5),
+         surf_10_1 = (ssoicl1p*7.8) + (ssoicl2p*4.5) + (ssoicl3p*0) + (ssoicl4p*-4.5) + (ssoicl5p*-7.8) + (ssoicl6p*-4.5) + (ssoicl7p*0) + (ssoicl8p*4.5)) %>%
+  select(client_number, surf_7_1, surf_8_1, surf_9_1, surf_10_1)
 
 # SOST-SOSI AFTER       
 sosa <- kayla_processed %>%
-  mutate(sostaffa = (sostcl1a*0) + (sostcl2a*4.5) + (sostcl3a*7.8) + (sostcl4a*4.5) + (sostcl5a*0) + (sostcl6a*-4.5) + (sostcl7a*-7.8) + (sostcl8a*-4.5),
-         sostauta = (sostcl1a*7.8) + (sostcl2a*4.5) + (sostcl3a*0) + (sostcl4a*-4.5) + (sostcl5a*-7.8) + (sostcl6a*-4.5) + (sostcl7a*0) + (sostcl8a*4.5),
+  mutate(surf_3_2 = (sostcl1a*0) + (sostcl2a*4.5) + (sostcl3a*7.8) + (sostcl4a*4.5) + (sostcl5a*0) + (sostcl6a*-4.5) + (sostcl7a*-7.8) + (sostcl8a*-4.5),
+         surf_4_2 = (sostcl1a*7.8) + (sostcl2a*4.5) + (sostcl3a*0) + (sostcl4a*-4.5) + (sostcl5a*-7.8) + (sostcl6a*-4.5) + (sostcl7a*0) + (sostcl8a*4.5),
          # significant other reacting to subjects - affiliation and after and autonomy after
-         sosiaffa = (sosicl1a*0) + (sosicl2a*4.5) + (sosicl3a*7.8) + (sosicl4a*4.5) + (sosicl5a*0) + (sosicl6a*-4.5) + (sosicl7a*-7.8) + (sosicl8a*-4.5),
-         sosiauta = (sosicl1a*7.8) + (sosicl2a*4.5) + (sosicl3a*0) + (sosicl4a*-4.5) + (sosicl5a*-7.8) + (sosicl6a*-4.5) + (sosicl7a*0) + (sosicl8a*4.5)) %>%
-  select(client_number, sostaffa, sostauta, sosiaffa, sosiauta)
+         surf_5_2 = (sosicl1a*0) + (sosicl2a*4.5) + (sosicl3a*7.8) + (sosicl4a*4.5) + (sosicl5a*0) + (sosicl6a*-4.5) + (sosicl7a*-7.8) + (sosicl8a*-4.5),
+         surf_6_2 = (sosicl1a*7.8) + (sosicl2a*4.5) + (sosicl3a*0) + (sosicl4a*-4.5) + (sosicl5a*-7.8) + (sosicl6a*-4.5) + (sosicl7a*0) + (sosicl8a*4.5)) %>%
+  select(client_number, surf_3_2, surf_4_2, surf_5_2, surf_6_2)
          
 # SSOT-SOSI AFTER
 ssoa <- kayla_processed %>%
-  mutate(ssotaffa = (ssotcl1a*0) + (ssotcl2a*4.5) + (ssotcl3a*7.8) + (ssotcl4a*4.5) + (ssotcl5a*0) + (ssotcl6a*-4.5) + (ssotcl7a*-7.8) + (sostcl8a*-4.5),
-         ssotauta = (ssotcl1a*7.8) + (ssotcl2a*4.5) + (ssotcl3a*0) + (ssotcl4a*-4.5) + (ssotcl5a*-7.8) + (ssotcl6a*-4.5) + (ssotcl7a*0) + (ssotcl8a*4.5),
+  mutate(surf_7_2 = (ssotcl1a*0) + (ssotcl2a*4.5) + (ssotcl3a*7.8) + (ssotcl4a*4.5) + (ssotcl5a*0) + (ssotcl6a*-4.5) + (ssotcl7a*-7.8) + (sostcl8a*-4.5),
+         surf_8_2 = (ssotcl1a*7.8) + (ssotcl2a*4.5) + (ssotcl3a*0) + (ssotcl4a*-4.5) + (ssotcl5a*-7.8) + (ssotcl6a*-4.5) + (ssotcl7a*0) + (ssotcl8a*4.5),
          # subject reacting towards significant other - affiliation after and autonomy after
-        ssoiaffa = (ssoicl1a*0) + (ssoicl2a*4.5) + (ssoicl3a*7.8) + (ssoicl4a*4.5) + (ssoicl5a*0) + (ssoicl6a*-4.5) + (ssoicl7a*-7.8) + (sostcl8a*-4.5),
-         ssoiauta = (ssoicl1a*7.8) + (ssoicl2a*4.5) + (ssoicl3a*0) + (ssoicl4a*-4.5) + (ssoicl5a*-7.8) + (ssoicl6a*-4.5) + (ssoicl7a*0) + (ssoicl8a*4.5)) %>%
-  select(client_number, ssotaffa, ssotauta, ssoiaffa, ssoiauta)
+        surf_9_2 = (ssoicl1a*0) + (ssoicl2a*4.5) + (ssoicl3a*7.8) + (ssoicl4a*4.5) + (ssoicl5a*0) + (ssoicl6a*-4.5) + (ssoicl7a*-7.8) + (sostcl8a*-4.5),
+         surf_10_2 = (ssoicl1a*7.8) + (ssoicl2a*4.5) + (ssoicl3a*0) + (ssoicl4a*-4.5) + (ssoicl5a*-7.8) + (ssoicl6a*-4.5) + (ssoicl7a*0) + (ssoicl8a*4.5)) %>%
+  select(client_number, surf_7_2, surf_8_2, surf_9_2, surf_10_2)
 
 
 
@@ -272,22 +274,29 @@ ssoa <- kayla_processed %>%
 
 Create trimmed down coefficient table
 ```{r}
-int %>% inner_join(int, sosp, ssop, sosa, ssoa)
-
-bind_cols(int, sosp, ssop, sosa, ssoa) %>% 
+coefficients <- bind_cols(int, sosp, ssop, sosa, ssoa) %>% 
   select(-client_number1, -client_number2, -client_number3, -client_number4)
+
+coefficents_long <- coefficients %>%
+  gather(key, value, -client_number, -group) %>% 
+  extract(key, c("surface", "state"), "(surf\\_.*)\\_(.)") %>%
+  spread(state, value) %>%
+  #clean_names() %>%
+  rename(pre = `1`,
+         post = `2`)
+
 ```
 
 
 Summarize PANAS from Kayla
 ```{r panas subscales}
-kayla_processed$panaspospre <-  kayla_processed$panas_p1 + kayla_processed$panas_p3 + kayla_processed$panas_p5 + kayla_processed$panas_p9 + kayla_processed$panas_p10 + kayla_processed$panas_p12 + kayla_processed$panas_p14 + kayla_processed$panas_p16 + kayla_processed$panas_p17+ kayla_processed$panas_p19
+kayla_processed$panas1_1 <-  kayla_processed$panas_p1 + kayla_processed$panas_p3 + kayla_processed$panas_p5 + kayla_processed$panas_p9 + kayla_processed$panas_p10 + kayla_processed$panas_p12 + kayla_processed$panas_p14 + kayla_processed$panas_p16 + kayla_processed$panas_p17+ kayla_processed$panas_p19
 
-kayla_processed$panasnegpre <-  kayla_processed$panas_p2+  kayla_processed$panas_p4+  kayla_processed$panas_p6+  kayla_processed$panas_p7+  kayla_processed$panas_p8+  kayla_processed$panas_p11+  kayla_processed$panas_p13+  kayla_processed$panas_p15+  kayla_processed$panas_p18+  kayla_processed$panas_p20
+kayla_processed$panas2_1 <-  kayla_processed$panas_p2+  kayla_processed$panas_p4+  kayla_processed$panas_p6+  kayla_processed$panas_p7+  kayla_processed$panas_p8+  kayla_processed$panas_p11+  kayla_processed$panas_p13+  kayla_processed$panas_p15+  kayla_processed$panas_p18+  kayla_processed$panas_p20
  
-kayla_processed$panasposafter <- kayla_processed$panas_a1 + kayla_processed$panas_a3 + kayla_processed$panas_a5 + kayla_processed$panas_a9 + kayla_processed$panas_a10 + kayla_processed$panas_a12 + kayla_processed$panas_a14 + kayla_processed$panas_a16 + kayla_processed$panas_a17 + kayla_processed$panas_a19
+kayla_processed$panas1_2 <- kayla_processed$panas_a1 + kayla_processed$panas_a3 + kayla_processed$panas_a5 + kayla_processed$panas_a9 + kayla_processed$panas_a10 + kayla_processed$panas_a12 + kayla_processed$panas_a14 + kayla_processed$panas_a16 + kayla_processed$panas_a17 + kayla_processed$panas_a19
  
-kayla_processed$panasnegafter <- kayla_processed$panas_a2+  kayla_processed$panas_a4+  kayla_processed$panas_a6+  kayla_processed$panas_a7+  kayla_processed$panas_a8+  kayla_processed$panas_a11+  kayla_processed$panas_a13+  kayla_processed$panas_a15+  kayla_processed$panas_a18+  kayla_processed$panas_a20
+kayla_processed$panas2_2 <- kayla_processed$panas_a2+  kayla_processed$panas_a4+  kayla_processed$panas_a6+  kayla_processed$panas_a7+  kayla_processed$panas_a8+  kayla_processed$panas_a11+  kayla_processed$panas_a13+  kayla_processed$panas_a15+  kayla_processed$panas_a18+  kayla_processed$panas_a20
 ```
 
 Calculate the Reliability for the PANAS.  You would need to install the package `fmsb`
@@ -328,51 +337,10 @@ CronbachAlpha(panasnegafter.df) # .87
 ```{r}
 # 1. First, general paired t-tests for sostaff (sign other to subject transitive affiliation), ssotaff (subject to sign other transitive affiliation), sosiaff (sign other to subject intransitive affiliation), ssoiaff (subject to sign other intransitive affiliation)
 
-library(broom)
-library(tibble)
-
-Orange <- as_tibble(Orange)
-
-
-
-library(dplyr)
-
-Orange %>% 
-  group_by(Tree) %>%
-  summarize(correlation = cor(age, circumference))
-
-ct <- cor.test(Orange$age, Orange$circumference)
-ct
-tidy(ct)
-
-library(tidyr)
-
-orange %>% count(Tree)
-
-nested <- Orange %>% 
-  nest(-Tree)
-
-library(purrr)
-
-nested %>% 
-  mutate(test = map(data, ~ cor.test(.x$age, .x$circumference)))
-
-nested %>% 
-  mutate(
-    test = map(data, ~ cor.test(.x$age, .x$circumference)), # S3 list-col
-    tidied = map(test, tidy)
-  ) 
-
-
-Orange %>% 
-  nest(-Tree) %>% 
-  mutate(
-    test = map(data, ~ cor.test(.x$age, .x$circumference)), # S3 list-col
-    tidied = map(test, tidy)
-  ) %>% 
-  unnest(tidied, .drop = TRUE)
-
-
+coefficents_long %>%
+       #arrange(time1) %>%
+       group_by(surface, group) %>%
+       do(tidy(t.test(.$pre, .$post, paired=TRUE)))  
 
 ```
 
@@ -387,6 +355,25 @@ Orange %>%
 # https://cran.r-project.org/web/packages/broom/vignettes/broom.html
 dimensions <- kayla_processed %>%
   select(client_number, group, i_c, i_a, survey, gender, c(212:231))
+
+coeff_model <- coefficents_long %>%
+  nest(-surface) %>% 
+  mutate(
+    fit = map(data, ~ lm(post ~ pre, data = .x)),  # S3 list-col
+    tidied = map(fit, tidy),
+    glanced = map(fit, glance),
+    augmented = map(fit, augment)
+  )
+
+
+coeff_model %>%
+  unnest(glanced, .drop = TRUE)
+
+coeff_model %>%
+  unnest(augmented) %>% View()
+  
+
+
 
 
 
@@ -431,12 +418,54 @@ resid.tb2 <- resid.tb2 %>%
 
 ## Hypothesis 4: Participants seeking treatment for substance abuse will report less negative affect following use of their substance of choice compared to participants not seeking treatment for substance abuse.
 ```{r}
-
+kayla_processed
 ```
 
 
 ## Hypothesis 5: Participants not seeking treatment for substance abuse will report greater positive affect following substance use compared to participants seeking treatment for substance abuse.
+```{r select panas data}
+panas_data <- kayla_processed %>% select(client_number, group, panas1_1, panas1_2, panas2_1, panas2_2)
+```
+
+```{r calculate panas residuals}
+# calculate positive residual change
+panas1_fit <- lm(panas1_2 ~ panas1_1, data = panas_data)
+resid1 <- augment(panas1_fit)
+  
+resid1_2 <- resid1 %>%
+  select(.std.resid) %>%
+  rename(panas1_res = .std.resid)
+
+# calculate negative residual change
+panas2_fit <- lm(panas2_2 ~ panas2_1, data = panas_data)
+resid2 <- augment(panas2_fit)
+  
+resid2_2 <- resid2 %>%
+  select(.std.resid) %>%
+  rename(panas2_res = .std.resid)
+
+panas_processed <- panas_data %>% bind_cols(resid1_2, resid2_2)
+```
+
+
 ```{r}
+panas_processed %>%
+  gather(type, value, panas1_res, panas2_res, -client_number) %>% View()
+  ggplot()
+```
+
+
+
+Model PANAS Data
+```{r}
+positive_fit <- lm(panas1_res ~ group, data = panas_processed)
+negative_fit <- lm(panas2_res ~ group, data = panas_processed)
+
+arm::display(positive_fit)
+arm::display(negative_fit)
+```
+
+
 
 ```
 
