@@ -1,3 +1,8 @@
+---
+output:
+  word_document: default
+  html_document: default
+---
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE, warning = FALSE, message = FALSE)
@@ -15,6 +20,8 @@ library(janitor)
 library(broom)
 library(tidyr)
 library(fmsb) # contains ChronbachAlpha 
+library(arm)
+library(knitr)
 ```
 
 Get Data directly from OSF and then save it as a .rds file.  You need to run this chunk once since we're not updating or changing the excel spreadsheet. I but a `#` in front of it all to make this point.  As long as you have 'kayla.rds' in your folder then you're good to go. 
@@ -41,7 +48,7 @@ kayla_raw  <- read_rds("kayla.rds")
 # Data Wrangling
 
 Rename the SASB variables in the excel to match the SASB clusters.  
-```{r rename sasb variables}
+```{r create processed data, echo=FALSE}
 # we rename introject first
 kayla_processed <- kayla_raw %>%
   rename(intcl1b = sasb_1, 
@@ -203,95 +210,124 @@ kayla_processed <- kayla_raw %>%
          pssoicl5a = sasb_pa26,
          pssoicl6a = sasb_pa23,
          pssoicl7a = sasb_pa32,
-         pssoicl8a = sasb_pa18)
+         pssoicl8a = sasb_pa18) %>%
+  mutate(post_id = row_number())
 ```
 
-
-
 The following creates weighted summary scores for SASB Affiliation and Autonomy by SASB surface.
-```{r SASB weighted summary scores}
+```{r int weight, echo=FALSE}
 ###### 1. Introject
 int <-  kayla_processed %>%
   mutate(surf_1_1 = (intcl1b*0) + (intcl2b*4.5) + (intcl3b*7.8) + (intcl4b*4.5) + (intcl5b*0) + (intcl6b*-4.5) + (intcl7b*-7.8) + (intcl8b*-4.5),
          surf_2_1 = (intcl1b*7.8) + (intcl2b*4.5) + (intcl3b*0) + (intcl4b*-4.5) + (intcl5b*-7.8) + (intcl6b*-4.5) + (intcl7b*0) + (intcl8b*4.5),
          surf_1_2 = (intcl1w*0) + (intcl2w*4.5) + (intcl3w*7.8) + (intcl4w*4.5) + (intcl5w*0) + (intcl6w*-4.5) + (intcl7w*-7.8) + (intcl8w*-4.5),
          surf_2_2 = (intcl1w*7.8) + (intcl2w*4.5) + (intcl3w*0) + (intcl4w*-4.5) + (intcl5w*-7.8) + (intcl6w*-4.5) + (intcl7w*0) + (intcl8w*4.5)) %>%
-  select(client_number, group, surf_1_1, surf_1_2, surf_2_1, surf_2_2)
+  dplyr::select(client_number, group, surf_1_1, surf_1_2, surf_2_1, surf_2_2)
+```
 
+Interpersonal Surfaces
 
-# SOST/SOSI PRE
+```{r sost and sosi pre weight, echo=FALSE}
 sosp <- kayla_processed %>%
   mutate(surf_3_1 = (sostcl1p*0) + (sostcl2p*4.5) + (sostcl3p*7.8) + (sostcl4p*4.5) + (sostcl5p*0) + (sostcl6p*-4.5) + (sostcl7p*-7.8) + (sostcl8p*-4.5),
          surf_4_1 = (sostcl1p*7.8) + (sostcl2p*4.5) + (sostcl3p*0) + (sostcl4p*-4.5) + (sostcl5p*-7.8) + (sostcl6p*-4.5) + (sostcl7p*0) + (sostcl8p*4.5),
          # significant other reacting to subjects - affiliation and pre and autonomy pre
          surf_5_1 = (sosicl1p*0) + (sosicl2p*4.5) + (sosicl3p*7.8) + (sosicl4p*4.5) + (sosicl5p*0) + (sosicl6p*-4.5) + (sosicl7p*-7.8) + (sosicl8p*-4.5),
          surf_6_1 = (sosicl1p*7.8) + (sosicl2p*4.5) + (sosicl3p*0) + (sosicl4p*-4.5) + (sosicl5p*-7.8) + (sosicl6p*-4.5) + (sosicl7p*0) + (sosicl8p*4.5)) %>%
-  select(client_number, surf_3_1, surf_4_1, surf_5_1, surf_6_1)
+  dplyr::select(client_number, surf_3_1, surf_4_1, surf_5_1, surf_6_1)
+```
 
-
-# SSOT/SSOI PRE --------------------
+```{r ssot and ssoi pre weigth, echo=FALSE}
 ssop <- kayla_processed %>%
   mutate(surf_7_1 = (ssotcl1p*0) + (ssotcl2p*4.5) + (ssotcl3p*7.8) + (ssotcl4p*4.5) + (ssotcl5p*0) + (ssotcl6p*-4.5) + (ssotcl7p*-7.8) + (sostcl8p*-4.5),
          surf_8_1 = (ssotcl1p*7.8) + (ssotcl2p*4.5) + (ssotcl3p*0) + (ssotcl4p*-4.5) + (ssotcl5p*-7.8) + (ssotcl6p*-4.5) + (ssotcl7p*0) + (ssotcl8p*4.5),
          # subject reacting towards significant other - affiliation pre and autonomy pre
         surf_9_1 = (ssoicl1p*0) + (ssoicl2p*4.5) + (ssoicl3p*7.8) + (ssoicl4p*4.5) + (ssoicl5p*0) + (ssoicl6p*-4.5) + (ssoicl7p*-7.8) + (sostcl8p*-4.5),
          surf_10_1 = (ssoicl1p*7.8) + (ssoicl2p*4.5) + (ssoicl3p*0) + (ssoicl4p*-4.5) + (ssoicl5p*-7.8) + (ssoicl6p*-4.5) + (ssoicl7p*0) + (ssoicl8p*4.5)) %>%
-  select(client_number, surf_7_1, surf_8_1, surf_9_1, surf_10_1)
+  dplyr::select(client_number, surf_7_1, surf_8_1, surf_9_1, surf_10_1)
+```
 
-# SOST-SOSI AFTER       
+```{r sost-sosi after weights, echo=FALSE}
 sosa <- kayla_processed %>%
   mutate(surf_3_2 = (sostcl1a*0) + (sostcl2a*4.5) + (sostcl3a*7.8) + (sostcl4a*4.5) + (sostcl5a*0) + (sostcl6a*-4.5) + (sostcl7a*-7.8) + (sostcl8a*-4.5),
          surf_4_2 = (sostcl1a*7.8) + (sostcl2a*4.5) + (sostcl3a*0) + (sostcl4a*-4.5) + (sostcl5a*-7.8) + (sostcl6a*-4.5) + (sostcl7a*0) + (sostcl8a*4.5),
          # significant other reacting to subjects - affiliation and after and autonomy after
          surf_5_2 = (sosicl1a*0) + (sosicl2a*4.5) + (sosicl3a*7.8) + (sosicl4a*4.5) + (sosicl5a*0) + (sosicl6a*-4.5) + (sosicl7a*-7.8) + (sosicl8a*-4.5),
          surf_6_2 = (sosicl1a*7.8) + (sosicl2a*4.5) + (sosicl3a*0) + (sosicl4a*-4.5) + (sosicl5a*-7.8) + (sosicl6a*-4.5) + (sosicl7a*0) + (sosicl8a*4.5)) %>%
-  select(client_number, surf_3_2, surf_4_2, surf_5_2, surf_6_2)
-         
-# SSOT-SOSI AFTER
+  dplyr::select(client_number, surf_3_2, surf_4_2, surf_5_2, surf_6_2)
+```
+
+```{r ssot-ssoi after, echo=FALSE}
 ssoa <- kayla_processed %>%
   mutate(surf_7_2 = (ssotcl1a*0) + (ssotcl2a*4.5) + (ssotcl3a*7.8) + (ssotcl4a*4.5) + (ssotcl5a*0) + (ssotcl6a*-4.5) + (ssotcl7a*-7.8) + (sostcl8a*-4.5),
          surf_8_2 = (ssotcl1a*7.8) + (ssotcl2a*4.5) + (ssotcl3a*0) + (ssotcl4a*-4.5) + (ssotcl5a*-7.8) + (ssotcl6a*-4.5) + (ssotcl7a*0) + (ssotcl8a*4.5),
          # subject reacting towards significant other - affiliation after and autonomy after
         surf_9_2 = (ssoicl1a*0) + (ssoicl2a*4.5) + (ssoicl3a*7.8) + (ssoicl4a*4.5) + (ssoicl5a*0) + (ssoicl6a*-4.5) + (ssoicl7a*-7.8) + (sostcl8a*-4.5),
          surf_10_2 = (ssoicl1a*7.8) + (ssoicl2a*4.5) + (ssoicl3a*0) + (ssoicl4a*-4.5) + (ssoicl5a*-7.8) + (ssoicl6a*-4.5) + (ssoicl7a*0) + (ssoicl8a*4.5)) %>%
-  select(client_number, surf_7_2, surf_8_2, surf_9_2, surf_10_2)
+  dplyr::select(client_number, surf_7_2, surf_8_2, surf_9_2, surf_10_2)
+```
 
-
-
-
-### --------- Kalya - add parents here and follow the pattern above ----------- #####
-
-# PSOST-PSOSI PRE
+```{r parents code, echo=FALSE}
+psosp <- kayla_processed %>%
+  mutate(surf_11_1 = (psostcl1p*0) + (psostcl2p*4.5) + (psostcl3p*7.8) + (psostcl4p*4.5) + (psostcl5p*0) + (psostcl6p*-4.5) + (psostcl7p*-7.8) + (psostcl8p*-4.5),
+         surf_12_1 = (psostcl1p*7.8) + (psostcl2p*4.5) + (psostcl3p*0) + (psostcl4p*-4.5) + (psostcl5p*-7.8) + (psostcl6p*-4.5) + (psostcl7p*0) + (psostcl8p*4.5),
+         # parent significant other reacting to subjects - affiliation and pre and autonomy pre
+         surf_13_1 = (psosicl1p*0) + (psosicl2p*4.5) + (sosicl3p*7.8) + (sosicl4p*4.5) + (sosicl5p*0) + (sosicl6p*-4.5) + (sosicl7p*-7.8) + (sosicl8p*-4.5),
+        surf_14_1 = (psosicl1p*7.8) + (psosicl2p*4.5) + (psosicl3p*0) + (psosicl4p*-4.5) + (psosicl5p*-7.8) + (psosicl6p*-4.5) + (psosicl7p*0) + (psosicl8p*4.5)) %>%
+  dplyr::select(client_number, surf_11_1, surf_12_1, surf_13_1, surf_14_1)
 
 # PSSOT-PSSOI PRE
+pssop <- kayla_processed %>%
+  mutate(surf_15_1 = (pssotcl1p*0) + (pssotcl2p*4.5) + (pssotcl3p*7.8) + (pssotcl4p*4.5) + (pssotcl5p*0) + (pssotcl6p*-4.5) + (pssotcl7p*-7.8) + (psostcl8p*-4.5),
+         surf_16_1 = (pssotcl1p*7.8) + (pssotcl2p*4.5) + (pssotcl3p*0) + (pssotcl4p*-4.5) + (pssotcl5p*-7.8) + (pssotcl6p*-4.5) + (pssotcl7p*0) + (pssotcl8p*4.5),
+         # subject reacting towards significant other (parent) - affiliation pre and autonomy pre
+      surf_17_1 = (pssoicl1p*0) + (pssoicl2p*4.5) + (pssoicl3p*7.8) + (pssoicl4p*4.5) + (pssoicl5p*0) + (pssoicl6p*-4.5) + (pssoicl7p*-7.8) + (psostcl8p*-4.5),
+         surf_18_1 = (pssoicl1p*7.8) + (pssoicl2p*4.5) + (pssoicl3p*0) + (pssoicl4p*-4.5) + (pssoicl5p*-7.8) + (pssoicl6p*-4.5) + (pssoicl7p*0) + (pssoicl8p*4.5)) %>%
+  dplyr::select(client_number, surf_15_1, surf_16_1, surf_17_1, surf_18_1)
+
 
 # PSOST-PSOSI After
+psosa <- kayla_processed %>%
+  mutate(surf_11_2 = (psostcl1a*0) + (psostcl2a*4.5) + (psostcl3a*7.8) + (psostcl4a*4.5) + (psostcl5a*0) + (psostcl6a*-4.5) + (psostcl7a*-7.8) + (psostcl8a*-4.5),
+         surf_12_2 = (psostcl1a*7.8) + (psostcl2a*4.5) + (psostcl3a*0) + (psostcl4a*-4.5) + (psostcl5a*-7.8) + (psostcl6a*-4.5) + (psostcl7a*0) + (psostcl8a*4.5),
+         # significant other (parent) reacting to subjects - affiliation and after and autonomy after
+         surf_13_2 = (psosicl1a*0) + (psosicl2a*4.5) + (psosicl3a*7.8) + (psosicl4a*4.5) + (psosicl5a*0) + (psosicl6a*-4.5) + (psosicl7a*-7.8) + (psosicl8a*-4.5),
+         surf_14_2 = (psosicl1a*7.8) + (psosicl2a*4.5) + (psosicl3a*0) + (psosicl4a*-4.5) + (psosicl5a*-7.8) + (psosicl6a*-4.5) + (psosicl7a*0) + (psosicl8a*4.5)) %>%
+  dplyr::select(client_number, surf_11_2, surf_12_2, surf_13_2, surf_14_2)
+
 
 # PSSOT-PSSOI After
-
-
+pssoa <- kayla_processed %>%
+  mutate(surf_15_2 = (pssotcl1a*0) + (pssotcl2a*4.5) + (pssotcl3a*7.8) + (pssotcl4a*4.5) + (pssotcl5a*0) + (pssotcl6a*-4.5) + (pssotcl7a*-7.8) + (psostcl8a*-4.5),
+         surf_16_2 = (pssotcl1a*7.8) + (pssotcl2a*4.5) + (pssotcl3a*0) + (pssotcl4a*-4.5) + (pssotcl5a*-7.8) + (pssotcl6a*-4.5) + (pssotcl7a*0) + (pssotcl8a*4.5),
+         # subject reacting towards significant other (parent) - affiliation after and autonomy after
+        surf_17_2 = (pssoicl1a*0) + (pssoicl2a*4.5) + (pssoicl3a*7.8) + (pssoicl4a*4.5) + (pssoicl5a*0) + (pssoicl6a*-4.5) + (pssoicl7a*-7.8) + (psostcl8a*-4.5),
+         surf_18_2 = (pssoicl1a*7.8) + (pssoicl2a*4.5) + (pssoicl3a*0) + (pssoicl4a*-4.5) + (pssoicl5a*-7.8) + (pssoicl6a*-4.5) + (pssoicl7a*0) + (pssoicl8a*4.5)) %>%
+  dplyr::select(client_number, surf_15_2, surf_16_2, surf_17_2, surf_18_2)
 ```
 
 
-```{r SASB weights Long Format}
-# Create trimmed down coefficient table
+```{r SASB weights Long Format, echo=FALSE}
+# Create trimmed down coefficient table that does not include parents.
 coefficients <- bind_cols(int, sosp, ssop, sosa, ssoa) %>% 
-  select(-client_number1, -client_number2, -client_number3, -client_number4)
+  dplyr::select(-client_number1, -client_number2, -client_number3, -client_number4)# %>%
+  #mutate(post_id = row_number())
 
-# create long file to do multiple t-tests.
+# Create long file to do multiple t-tests.
 coefficents_long <- coefficients %>%
   gather(key, value, -client_number, -group) %>% 
   extract(key, c("surface", "state"), "(surf\\_.*)\\_(.)") %>%
   spread(state, value) %>%
   #clean_names() %>%
   rename(pre = `1`,
-         post = `2`)
-
+         post = `2`) %>%
+  mutate(surface = factor(surface, levels = c("surf_1", "surf_2", "surf_3", "surf_4", "surf_5", "surf_6", "surf_7", "surf_8", "surf_9", "surf_10")),
+         group_type = factor(group, labels = c("Control", "Experimental")),
+         group_type = factor(group_type, levels = c("Experimental", "Control")))
 ```
 
 
-Summarize PANAS from Kayla
-```{r panas subscales}
+```{r summarize panas subscales, echo=FALSE}
 kayla_processed$panas1_1 <-  kayla_processed$panas_p1 + kayla_processed$panas_p3 + kayla_processed$panas_p5 + kayla_processed$panas_p9 + kayla_processed$panas_p10 + kayla_processed$panas_p12 + kayla_processed$panas_p14 + kayla_processed$panas_p16 + kayla_processed$panas_p17+ kayla_processed$panas_p19
 
 kayla_processed$panas2_1 <-  kayla_processed$panas_p2+  kayla_processed$panas_p4+  kayla_processed$panas_p6+  kayla_processed$panas_p7+  kayla_processed$panas_p8+  kayla_processed$panas_p11+  kayla_processed$panas_p13+  kayla_processed$panas_p15+  kayla_processed$panas_p18+  kayla_processed$panas_p20
@@ -302,64 +338,82 @@ kayla_processed$panas2_2 <- kayla_processed$panas_a2+  kayla_processed$panas_a4+
 ```
 
 Calculate the Reliability for the PANAS.  You would need to install the package `fmsb`
-```{r PANAS Reliability}
+```{r PANAS Reliability, echo=FALSE}
 # Positive Affect Score - Prior
-panaspospre.df <- kayla_tb[ , c("panas_p1", "panas_p3", "panas_p5", "panas_p9", "panas_p12", "panas_p14", "panas_p16", "panas_p17", "panas_p19")] 
+panaspospre.df <- kayla_processed[ , c("panas_p1", "panas_p3", "panas_p5", "panas_p9", "panas_p12", "panas_p14", "panas_p16", "panas_p17", "panas_p19")] 
 CronbachAlpha(panaspospre.df) 
 #.87
 
 # Negative Affect Score Pior
-panasnegpre.df <- kayla_tb[ , c("panas_p2", "panas_p4", "panas_p6", "panas_p7", "panas_p8", "panas_p11", "panas_p13", "panas_p15", "panas_p18", "panas_p20")] CronbachAlpha(panasnegpre.df) # doesn't work
+panasnegpre.df <- kayla_processed[ , c("panas_p2", "panas_p4", "panas_p6", "panas_p7", "panas_p8", "panas_p11", "panas_p13", "panas_p15", "panas_p18", "panas_p20")] 
+CronbachAlpha(panasnegpre.df) # doesn't work
 #.87
 
 # Positive Affect Score After
-panasposafter.df <- kayla_tb[ , c("panas_a1", "panas_a3", "panas_a5", "panas_a9", "panas_a10", "panas_a12", "panas_a14", "panas_a16", "panas_a17", "panas_a19")] 
+panasposafter.df <- kayla_processed[ , c("panas_a1", "panas_a3", "panas_a5", "panas_a9", "panas_a10", "panas_a12", "panas_a14", "panas_a16", "panas_a17", "panas_a19")] 
 CronbachAlpha(panasposafter.df) # .80
 
 ## Negative Affect Score After
-panasnegafter.df <- kayla_tb[ , c("panas_a2", "panas_a4", "panas_a6", "panas_a7", "panas_a8", "panas_a11", "panas_a13", "panas_a15", "panas_a18", "panas_a20")] 
+panasnegafter.df <- kayla_processed[ , c("panas_a2", "panas_a4", "panas_a6", "panas_a7", "panas_a8", "panas_a11", "panas_a13", "panas_a15", "panas_a18", "panas_a20")] 
 CronbachAlpha(panasnegafter.df) # .87
 ```
 
 
-### Add depressive versus stimulant category to data
+Add depressive versus stimulant category to data
 ```{r}
 
 ```
-
-
-
-
 
 # Hypothesis Testing
 
-## Hypothesis 1: Participants seeking treatment for substance abuse will report greater hoped-for affiliation in a reported significant-other relationship following use of their substance of choice compared to participants not seeking treatment for substance abuse. (Do not analyze drug of choice as stated in data analytic plan)
+## Overall Descriptive Statistics
 
-1a. Paired t-test and visualization for entire sample
-```{r}
-# 1. First, general paired t-tests for sostaff (sign other to subject transitive affiliation), ssotaff (subject to sign other transitive affiliation), sosiaff (sign other to subject intransitive affiliation), ssoiaff (subject to sign other intransitive affiliation)
+Kayla, this will produce data for an APA table of means for your surfances.  They are not coded in a specific way. Here is the key:
+surf_1	INTAFF
+surf_2	INTAUT
+surf_3 SOSTAFF
+surf_4 SOSTAUT
+surf_5 SOSIAFF
+surf_6 SOSIAUT
+surf_7 SSOTAFF
+surf_8 SSOTAUT
+surf_9 SSOIAFF
+surf_10 SSOIAUT
 
+```{r descriptive stats, echo=FALSE}
 coefficents_long %>%
-       #arrange(time1) %>%
-       group_by(surface, group) %>%
-       do(tidy(t.test(.$pre, .$post, paired=TRUE)))  
+  group_by(group_type, surface) %>%
+  summarise(pre_mean = mean(pre, na.rm=TRUE),
+            post_mean = ,
+            pre_sd = sd(pre, na.rm=TRUE),
+            pos_sd = ,
+            pre_min = min(pre, na.rm=TRUE),
+            pre_max = max(pre, na.rm=TRUE),
+            post_min = ,
+            post_max = ) %>%
+  kable()
+
+# we'll have to do this with the PANAS!!!
 
 ```
 
 
-1b. Residual change and differences by experimental (substance) and control (nonubstance) groups
-###### SSOI AUT POST - Hypothesis 1 & 3
+## Hypothesis 1: Participants seeking treatment for substance abuse will report greater hoped-for affiliation in a reported significant-other relationship following use of their substance of choice compared to participants not seeking treatment for substance abuse. (Do not analyze drug of choice as stated in data analytic plan)
 
 
+Paired T-test for pre and post DIFFERENCE scores in affiliation for all surfaces and all groups - not comparing groups - and for interpersonal surfaces.
+```{r interpersonal surface tests, echo=FALSE}
+coefficents_long %>%
+  filter(surface == "surf_3" | surface == "surf_5" | surface == "surf_7" | surface == "surf_9") %>%
+  group_by(surface, group) %>%
+  do(tidy(t.test(.$pre, .$post, paired=TRUE)))  
+```
 
-3. Calculate Residuals from SASB Data SOSIAUT, SSOIAFF, SSOIAUT
-```{r SOSIAUT RES, }
+
+```{r Calculating Residuals}
 # https://cran.r-project.org/web/packages/broom/vignettes/broom.html
-dimensions <- kayla_processed %>%
-  select(client_number, group, i_c, i_a, survey, gender, c(212:231))
-
 coeff_model <- coefficents_long %>%
-  nest(-surface) %>% 
+  nest(-surface) %>%  
   mutate(
     fit = map(data, ~ lm(post ~ pre, data = .x)),  # S3 list-col
     tidied = map(fit, tidy),
@@ -367,43 +421,57 @@ coeff_model <- coefficents_long %>%
     augmented = map(fit, augment)
   )
 
-
-coeff_model %>%
-  unnest(glanced, .drop = TRUE)
-
-coeff_model %>%
-  unnest(augmented) %>% View()
-  
-
-
-
-
-
-fit1 <- lm(sostaffa ~ sostaffp, data = dimensions)
-
-tidy(fit1)
-#head(glance(fit))
-resid1 <- augment(fit1)
-resid.tb1 <- tbl_df(resid1)
-resid.tb1 <- resid.tb1 %>% 
-  select(.std.resid) %>%
-  rename(sosiautzres = .std.resid)
+#coeff_model %>% unnest(glanced, .drop = TRUE)
+sasb_residuals_noid <- coeff_model %>% 
+  unnest(augmented) %>% 
+  dplyr::select(surface, .rownames, .std.resid) %>%
+  spread(surface, .std.resid) %>%
+  rename(post_id = .rownames) %>%
+  mutate(post_id = as.numeric(post_id)) %>%
+  arrange(post_id)
+ 
+# need to add 
+coef_group <- coefficients %>%
+  mutate(post_id = row_number()) %>%
+  dplyr::select(client_number, post_id, everything())
+ 
+sasb_residuals <- bind_cols(sasb_residuals_noid, coef_group) %>%
+  dplyr::select(post_id, group, 2:11)
 ```
 
-```{r }
-fit2 <- lm(sosiaffa ~ sosiaffp, data = dimensions)
-#tidy(fit)
+
+```{r indep t-tests for residuals}
+h1_t_tests <- sasb_residuals %>%
+  gather(surface, value, -post_id, -group) %>%
+  nest(-surface) %>%
+  mutate(
+    fit = map(data, ~ t.test(value ~ group, data = .x)),  # S3 list-col
+    tidied = map(fit, tidy))
+
+#test$data[[1]]
+
+h1_t_tests %>%
+  unnest(tidied) %>%
+  dplyr::select(surface, statistic, p.value, conf.low, conf.high) %>%
+  filter(surface == "surf_3" | surface == "surf_5" | surface == "surf_7" | surface == "surf_9")
+
+####################### code to calculate individual residuals ##############
+#fit1 <- lm(surf_1_2 ~ surf_1_1, data = coefficients)
+#tidy(fit1)
 #head(glance(fit))
-resid2 <- augment(fit2)
-resid.tb2 <- tbl_df(resid2)
-resid.tb2 <- resid.tb2 %>% 
-  select(.std.resid) %>%
-  rename(ssoiautzres = .std.resid)
-`
+#resid1 <- augment(fit1)
+#resid.tb1 <- tbl_df(resid1)
+#int.tb <- resid.tb1 %>% 
+#  dplyr::select(.std.resid) %>%
+#  rename(intbautzres = .std.resid)
+##############################################################################
+```
+
 
 ```{r}
-
+knitr::knit_exit()
 ```
+
 
 
 
@@ -419,27 +487,19 @@ resid.tb2 <- resid.tb2 %>%
 ```
 
 ## Hypothesis 4: Participants seeking treatment for substance abuse will report less negative affect following use of their substance of choice compared to participants not seeking treatment for substance abuse.
-```{r}
-kayla_processed
-```
 
+```{r Process PANAS Data, echo=FALSE}
+# 1. Make a smaller version of data focused on PANAS
+panas_data <- kayla_processed %>% select(client_number, group, panas1_1, panas1_2, panas2_1, panas2_2)  %>%
+  mutate(group_type = factor(group, labels = c("Control", "Experimental")),
+         group_type = factor(group_type, levels = c("Experimental", "Control")))
 
-## Hypothesis 5: Participants not seeking treatment for substance abuse will report greater positive affect following substance use compared to participants seeking treatment for substance abuse.
-
-
-
-```{r select panas data, echo=FALSE}
-# Make a smaller version of data focused on PANAS
-panas_data <- kayla_processed %>% select(client_number, group, panas1_1, panas1_2, panas2_1, panas2_2)
-```
-
-```{r calculate panas residuals, echo=FALSE}
-# calculate positive residual change
+# 2. calculate positive residual change
 panas1_fit <- lm(panas1_2 ~ panas1_1, data = panas_data)
 resid1 <- augment(panas1_fit)
   
 resid1_2 <- resid1 %>%
-  select(.std.resid) %>%
+  dplyr::select(.std.resid) %>%
   rename(panas1_res = .std.resid)
 
 # calculate negative residual change
@@ -454,7 +514,7 @@ resid2_2 <- resid2 %>%
 panas_processed <- panas_data %>% bind_cols(resid1_2, resid2_2)
 ```
 
-### Summary Statistics for PANAS
+### Summary Statistics for PANAS Positive and Negative Affect (Make into APA Table)
 
 Mean and Standard Deviations by Group
 ```{r}
@@ -471,7 +531,7 @@ panas_data %>%
   knitr::kable()
 ```
 
-Minimum and Maxiumum for PANAS Positive and Negative
+Minimum and Maxiumum for PANAS Positive and Negative by Grup
 ```{r}
 panas_data %>%
   group_by(group) %>%
@@ -486,11 +546,7 @@ panas_data %>%
   knitr::kable()
 ```
 
-
 ### Visualize PANAS Change
-
-
-#### Distributions of PANAS
 
 Empirical Cumulative Distribution Function for Positive (kayla, look this up for interpretation)
 ```{r}
@@ -511,27 +567,10 @@ Empirical Cumulative Distribution Function for Negative (Kayla - you do this one
 ```
 Interpret: 
 
-#### PANAS Positive Change Overall
-```{r}
-panas_data %>% 
-  gather(panas_positive, score, panas1_1, panas1_2, -client_number) %>%
-  ggplot(aes(x=panas_positive, y=score, group=panas_positive)) +
-  geom_boxplot() +
-  geom_jitter(aes(color=panas_positive)) 
-```
 
-#### PANAS Positive Change by Group
-```{r}
-panas_data %>% 
-  gather(panas_positive, score, panas1_1, panas1_2, -client_number) %>%
-  ggplot(aes(x=panas_positive, y=score, group=panas_positive)) +
-  geom_boxplot() +
-  geom_jitter(aes(color=panas_positive)) +
-  facet_wrap(~group)
-```
+### H4: Visualize differences in Negative Affect on PANAS by State and Group
 
-
-#### PANAS Negative Affect Change
+#### PANAS Negative Change Overall Regardless of Group
 ```{r}
 panas_data %>% 
   gather(panas_negative, score, panas2_1, panas2_2, -client_number) %>%
@@ -544,25 +583,60 @@ panas_data %>%
 ```{r}
 panas_data %>% 
   gather(panas_negative, score, panas2_1, panas2_2, -client_number) %>%
+    mutate(panas_negative = factor(panas_negative, labels = c("Prior", "After"))) %>%
   ggplot(aes(x=panas_negative, y=score, group=panas_negative)) +
   geom_boxplot() +
-  geom_jitter(aes(color=panas_negative)) +
-  facet_wrap(~group)
+  geom_jitter(aes(color=panas_negative), size=2) +
+  facet_wrap(~ group_type) +
+  scale_color_manual(values=c("#12100F", "#60B2FF"), name="Negative Affect") +
+  labs(x="Negative Affect",
+       title = "Change in Negative Affect (PANAS) Prior and After Substance Use") 
 ```
 
-### Model PANAS Data
+
+```{r model negative affect}
+negative_fit <- lm(panas2_res ~ group, data = panas_processed)
+display(negative_fit)
+```
+
+
+## Hypothesis 5: Participants not seeking treatment for substance abuse will report greater positive affect following substance use compared to participants seeking treatment for substance abuse.
+
+
+
+### H5: Visualize differences in Positive Affect on PANAS by State and Group
+
+#### PANAS Positive Change Overall Regardless of Group
+```{r}
+panas_data %>% 
+  gather(panas_positive, score, panas1_1, panas1_2, -client_number) %>%
+  ggplot(aes(x=panas_positive, y=score, group=panas_positive)) +
+  geom_boxplot() +
+  geom_jitter(aes(color=panas_positive)) +
+  scale_color_manual(values=c("#12100F", "#60B2FF"))
+```
+
+#### PANAS Positive Change by Group
+```{r}
+panas_data %>% 
+  gather(panas_positive, score, panas1_1, panas1_2, -client_number) %>%
+    mutate(panas_positive = factor(panas_positive, labels = c("Prior", "After"))) %>%
+  ggplot(aes(x=panas_positive, y=score, group=panas_positive)) +
+  geom_boxplot() +
+  geom_jitter(aes(color=panas_positive), size=2) +
+  facet_wrap(~ group_type) +
+  scale_color_manual(values=c("#12100F", "#60B2FF"), name="Positive Affect") +
+  labs(x="Positive Affect",
+       title = "Change in Positive Affect (PANAS) Prior and After Substance Use") 
+```
+
+### Model Hypothesis 5: Positive Affect PANAS
 
 ```{r}
 positive_fit <- lm(panas1_res ~ group, data = panas_processed)
-negative_fit <- lm(panas2_res ~ group, data = panas_processed)
-
-arm::display(positive_fit)
-arm::display(negative_fit)
+display(positive_fit)
 ```
 
-
-
-```
 
 ## Hypothesis 6: Exploratory analyses will examine change in relationship and emotions associated with parental monitoring, peer acceptance, and diagnostic group.
 ```{r}
@@ -575,8 +649,24 @@ arm::display(negative_fit)
 
 
 
+```{r everyting after here is scratch, include=FALSE}
+knitr::knit_exit()
+```
+
+#### Scratch
 
 
+
+```{r h4-visualization}
+panas_processed %>%
+  gather(time, panas_score, panas1_1, panas1_2, -client_number) %>%
+  ggplot(aes(x=time, y=panas_score, color=group)) +
+  #geom_jitter(aes(color=group)) +
+  stat_summary(fun.y = mean, geom = "point", aes(group=group), position = position_dodge(width=.90)) + 
+  #stat_summary(fun.y = mean, geom = "line", aes(group= group), position = position_dodge(width=.90)) + 
+  stat_summary(fun.data = mean_cl_boot, geom = "errorbar", width = 0.2, aes(group=group), position = position_dodge(width=.90)) +
+  scale_color_manual(values=c("#12100F", "#60B2FF"))
+```
 
 
 
