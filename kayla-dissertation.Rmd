@@ -392,7 +392,24 @@ coefficents_long %>%
 ## Hypothesis 1: Participants seeking treatment for substance abuse will report greater hoped-for affiliation in a reported significant-other relationship following use of their substance of choice compared to participants not seeking treatment for substance abuse. (Do not analyze drug of choice as stated in data analytic plan)
 
 
-Paired T-test for pre and post DIFFERENCE scores in affiliation for all surfaces and all groups - not comparing groups - and for interpersonal surfaces.
+Boxplot for SASB Affiliation Scores
+```{r}
+coefficents_long %>%
+  filter(surface == "surf_3" | surface == "surf_5" | surface == "surf_7" | surface == "surf_9") %>%
+  dplyr::select(-group) %>%
+  gather(time, value, -group_type,-client_number, -surface) %>%
+  mutate(affiliation = as.numeric(value),
+         time_f = as.factor(time),
+         sasb_surface = factor(surface, labels = c("SOST", "SOSI", "SSOT", "SSOI")),
+         sasb_surface = factor(sasb_surface, levels = c("SOST", "SOSI", "SSOT", "SSOI"))) %>%
+  dplyr::select(client_number, sasb_surface, time_f, group_type, affiliation, -value, -time)
+  
+  
+```
+
+
+
+Paired T-test for pre and post difference scores in affiliation for all surfaces and all groups - not comparing groups - and for interpersonal surfaces.
 ```{r interpersonal surface tests, echo=FALSE}
 coefficents_long %>%
   filter(surface == "surf_3" | surface == "surf_5" | surface == "surf_7" | surface == "surf_9") %>%
@@ -475,6 +492,11 @@ h1_final <- h1_t_tests %>%
 #  rename(intbautzres = .std.resid)
 ##############################################################################
 ```
+SOST = Significant Other to Subject Transitive; SOSI = Significant Other to Subject Intransitive; SSOT = Subject to Significant Other Transitive; SSOI = Subject to Significant Other Intransitive
+
+
+
+
 
 
 ```{r}
