@@ -369,28 +369,19 @@ Add depressive versus stimulant category to data
 ## Overall Descriptive Statistics
 
 Kayla, this will produce data for an APA table of means for your surfances.  They are not coded in a specific way. Here is the key:
-surf_1	INTAFF
-surf_2	INTAUT
-surf_3 SOSTAFF
-surf_4 SOSTAUT
-surf_5 SOSIAFF
-surf_6 SOSIAUT
-surf_7 SSOTAFF
-surf_8 SSOTAUT
-surf_9 SSOIAFF
-surf_10 SSOIAUT
+surf_1	INTAFF; surf_2	INTAUT; surf_3 SOSTAFF; surf_4 SOSTAUT; surf_5 SOSIAFF; surf_6 SOSIAUT; surf_7 SSOTAFF; surf_8 SSOTAUT; surf_9 SSOIAFF;surf_10 SSOIAUT
 
 ```{r descriptive stats, echo=FALSE}
 coefficents_long %>%
   group_by(group_type, surface) %>%
   summarise(pre_mean = mean(pre, na.rm=TRUE),
-            post_mean = ,
+            post_mean = mean(post, na.rm=TRUE),
             pre_sd = sd(pre, na.rm=TRUE),
-            pos_sd = ,
+            pos_sd = sd(post, na.rm=TRUE),
             pre_min = min(pre, na.rm=TRUE),
             pre_max = max(pre, na.rm=TRUE),
-            post_min = ,
-            post_max = ) %>%
+            post_min = min(post, na.rm=TRUE),
+            post_max = max(post, na.rm=TRUE)) %>%
   kable()
 
 # we'll have to do this with the PANAS!!!
@@ -450,10 +441,28 @@ h1_t_tests <- sasb_residuals %>%
 
 #test$data[[1]]
 
-h1_t_tests %>%
+h1_final <- h1_t_tests %>%
   unnest(tidied) %>%
   dplyr::select(surface, statistic, p.value, conf.low, conf.high) %>%
-  filter(surface == "surf_3" | surface == "surf_5" | surface == "surf_7" | surface == "surf_9")
+  filter(surface == "surf_3" | surface == "surf_5" | surface == "surf_7" | surface == "surf_9") %>%
+  mutate(surface = factor(surface, levels = c("surf_3", "surf_5", "surf_7", "surf_9")),
+         sasb_surface = factor(surface, labels = c("SOST", "SOSI", "SSOT", "SSOI")),
+         sasb_surface = factor(sasb_surface, levels = c("SOST", "SOSI", "SSOT", "SSOI")))
+```  
+  
+```{r graph h1 t-tests, echo=FALSE}  
+  h1_final %>%
+  ggplot(aes(statistic, sasb_surface)) +
+  geom_point() +
+  geom_errorbarh(aes(xmin = conf.low,
+                     xmax = conf.high)) +
+  labs(y = "SASB Surface",
+       x = "T Statistic",
+       title = "Independent T Statistics Comparing Differences in Residual Change \non SASB Interpersonal Surfaces for Affiliation (95% CI)") +
+  coord_flip() +
+  xlim(2,-2) +
+  geom_vline(xintercept = 1.96, linetype="dashed") +
+  geom_vline(xintercept = -1.96, linetype="dashed")
 
 ####################### code to calculate individual residuals ##############
 #fit1 <- lm(surf_1_2 ~ surf_1_1, data = coefficients)
