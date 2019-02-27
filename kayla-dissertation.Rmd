@@ -1,7 +1,11 @@
 ---
+title: "Nelson Data Analysis for Doctoral Dissertation"
+author: "Kayla Nelson"
+date: "2/26/2019"
 output:
-  word_document: default
-  html_document: default
+  html_document:
+    toc: true
+    toc_float: true 
 ---
 
 ```{r setup, include=FALSE}
@@ -10,10 +14,8 @@ knitr::opts_chunk$set(echo = TRUE, warning = FALSE, message = FALSE)
 ```
 
 
-# Preliminary Setup and Data Import
 
-Load libraries.  If you don't have any then you need to run, for example, install.packages("fmsb") in the console ONCE.  Don't include it in the code itself.
-```{r load libraries}
+```{r load libraries, echo=FALSE}
 library(httr)
 library(tidyverse)
 library(janitor)
@@ -22,9 +24,10 @@ library(tidyr)
 library(fmsb) # contains ChronbachAlpha 
 library(arm)
 library(knitr)
+theme_set(theme_light())
 ```
 
-Get Data directly from OSF and then save it as a .rds file.  You need to run this chunk once since we're not updating or changing the excel spreadsheet. I but a `#` in front of it all to make this point.  As long as you have 'kayla.rds' in your folder then you're good to go. 
+
 ```{r import data, eval=FALSE, include=FALSE}
 #if (!file.exists('kayla.xlsx')) {
 #   data <- GET('osf.io/xnfg5//?action=download',
@@ -39,15 +42,10 @@ Get Data directly from OSF and then save it as a .rds file.  You need to run thi
 #saveRDS(kayla.tb, file = "kayla.rds")
 ```
 
-Open the Saved Data.  You'll likely run this everytime as long as you close your R project.  Make sure you're working in your R project.  The top right shoudl have a blue cube that says "dissertation", if i'm remembering correctly.
-```{r open data}
+```{r open data, echo=FALSE}
 kayla_raw  <- read_rds("kayla.rds")
 ```
 
-
-# Data Wrangling
-
-Rename the SASB variables in the excel to match the SASB clusters.  
 ```{r create processed data, echo=FALSE}
 # we rename introject first
 kayla_processed <- kayla_raw %>%
@@ -392,9 +390,9 @@ coefficents_long %>%
 ## Hypothesis 1: Participants seeking treatment for substance abuse will report greater hoped-for affiliation in a reported significant-other relationship following use of their substance of choice compared to participants not seeking treatment for substance abuse. (Do not analyze drug of choice as stated in data analytic plan)
 
 
-Boxplot for SASB Affiliation Scores
-```{r}
-coefficents_long %>%
+Boxplot for SASB Affiliation Scores by Group and Pre- and Post-Substance Use (N=31)
+```{r wrangle data for h1 boxplot, echo=FALSE}
+h1_box <- coefficents_long %>%
   filter(surface == "surf_3" | surface == "surf_5" | surface == "surf_7" | surface == "surf_9") %>%
   dplyr::select(-group) %>%
   gather(time, value, -group_type,-client_number, -surface) %>%
@@ -403,8 +401,21 @@ coefficents_long %>%
          sasb_surface = factor(surface, labels = c("SOST", "SOSI", "SSOT", "SSOI")),
          sasb_surface = factor(sasb_surface, levels = c("SOST", "SOSI", "SSOT", "SSOI"))) %>%
   dplyr::select(client_number, sasb_surface, time_f, group_type, affiliation, -value, -time)
+```
+
   
-  
+```{r h1 boxplot, echo=FALSE}
+h1_box %>%
+  ggplot(aes(time_f, affiliation, color=group_type)) +
+  geom_boxplot(aes(color=group_type)) +
+  facet_wrap(~sasb_surface) + 
+  guides(color=guide_legend(title="Group")) +
+  labs(x = "Time",
+       y = "SASB Affiliation",
+       title = "Boxplots of SASB Affiliation by Interpersonal Surfaces \nand Group Pre and Post Substance Use",
+       caption = "Note. SOST = Significant Other to Subject Transitive; SOSI = Significant Other to Subject Intransitive; \nSSOT = Subject to Significant Other Transitive; SSOI = Subject to Significant Other Intransitive") +
+  scale_color_manual(values=c("#AAAAAA", "#60B2FF")) +
+  theme(plot.caption = element_text(hjust = 0))
 ```
 
 
@@ -475,11 +486,13 @@ h1_final <- h1_t_tests %>%
                      xmax = conf.high)) +
   labs(y = "SASB Surface",
        x = "T Statistic",
-       title = "Independent T Statistics Comparing Differences in Residual Change \non SASB Interpersonal Surfaces for Affiliation (95% CI)") +
+       title = "Independent T-Tests Comparing Differences in Residual Change \non SASB Interpersonal Surfaces for Affiliation for Pre- and Post-Substance Use (95% CI)",
+       caption = "Note. SOST = Significant Other to Subject Transitive; SOSI = Significant Other to Subject Intransitive; SSOT = Subject to Significant Other Transitive; \nSSOI = Subject to Significant Other Intransitive; Dashed lines indicate +/- 1.96 T-Value") +
   coord_flip() +
   xlim(2,-2) +
   geom_vline(xintercept = 1.96, linetype="dashed") +
-  geom_vline(xintercept = -1.96, linetype="dashed")
+  geom_vline(xintercept = -1.96, linetype="dashed") +
+  theme(plot.caption = element_text(hjust = 0))
 
 ####################### code to calculate individual residuals ##############
 #fit1 <- lm(surf_1_2 ~ surf_1_1, data = coefficients)
@@ -492,7 +505,29 @@ h1_final <- h1_t_tests %>%
 #  rename(intbautzres = .std.resid)
 ##############################################################################
 ```
-SOST = Significant Other to Subject Transitive; SOSI = Significant Other to Subject Intransitive; SSOT = Subject to Significant Other Transitive; SSOI = Subject to Significant Other Intransitive
+
+
+## **Hypothesis 2**: Adolescents who reported depressants (alcohol, marijuana, narcotics) as their drug of choice will rate their significant others as more sulking and resentful prior to using compared to adolescents who do not report depressants as their drug of choice. 
+```{r}
+
+```
+
+
+## **Hypothesis 3**: Participants seeking treatment for substance abuse will report greater hoped-for introject (self-concept) affiliation following use of their substance of choice compared to participants not seeking treatment for substance abuse.
+
+Technically, we cannot answer this because we asked the participants to rate their introject at best and worst unrelated to substance abuse. The change will be unrelated to use of substances like the interpersonal surfaces.
+
+**The revised question**: Is there a difference in affiliation introject from best to worst for those seeking treatment for substance use for those not seeking treatment for substance use? 
+
+Analyses are almost identical to H1 but with the introject affiliation surface, surface 1. The analyses include the following:
+1. Visualize introject affiliation differences between groups at their reported 'best' and at their reported 'worst'. Boxplots.
+2. Test differences in introject affiliation in both groups using paired t-tests.
+3. Calculate residual change scores for introject (worst predicted by best) and compare differences in residuals by group (substance or no-substance).
+4. Visualize test statistics. 
+
+```{r}
+
+```
 
 
 
@@ -503,19 +538,6 @@ SOST = Significant Other to Subject Transitive; SOSI = Significant Other to Subj
 knitr::knit_exit()
 ```
 
-
-
-
-## Hypothesis 2: Adolescents who reported depressants (alcohol, marijuana, narcotics) as their drug of choice will rate their significant others as more sulking and resentful prior to using compared to adolescents who do not report depressants as their drug of choice. 
-```{r}
-
-```
-
-
-## Hypothesis 3: Participants seeking treatment for substance abuse will report greater hoped-for introject (self-concept) affiliation following use of their substance of choice compared to participants not seeking treatment for substance abuse.
-```{r}
-
-```
 
 ## Hypothesis 4: Participants seeking treatment for substance abuse will report less negative affect following use of their substance of choice compared to participants not seeking treatment for substance abuse.
 
