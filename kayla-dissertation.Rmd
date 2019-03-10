@@ -320,8 +320,8 @@ coefficents_long <- coefficients %>%
   rename(pre = `1`,
          post = `2`) %>%
   mutate(surface = factor(surface, levels = c("surf_1", "surf_2", "surf_3", "surf_4", "surf_5", "surf_6", "surf_7", "surf_8", "surf_9", "surf_10")),
-         group_type = factor(group, labels = c("Control", "Experimental")),
-         group_type = factor(group_type, levels = c("Experimental", "Control")))
+         group_type = factor(group, labels = c("Non-Substance", "Substance Use")),
+         group_type = factor(group_type, levels = c("Substance Use", "Non-Substance")))
 ```
 
 
@@ -387,8 +387,17 @@ coefficents_long %>%
 ```
 
 
-## Hypothesis 1: Participants seeking treatment for substance abuse will report greater hoped-for affiliation in a reported significant-other relationship following use of their substance of choice compared to participants not seeking treatment for substance abuse. (Do not analyze drug of choice as stated in data analytic plan)
+## Hypothesis 1
 
+H1: Participants seeking treatment for substance abuse will report greater hoped-for affiliation in a reported significant-other relationship following use of their substance of choice compared to participants not seeking treatment for substance abuse. (Do not analyze drug of choice as stated in data analytic plan)
+
+1. Boxplot for Affiliation Scores by Group at Pre- and Post. 
+2. Descriptive analyses using pre and post paired t-tests.
+3. Differences between groups (substance versus non-substance) in residual change for affiliation
+4. Visualization of T-test statistics.
+
+
+### 1. Boxplot for Affiliation in Interpersonal Relationships
 
 Boxplot for SASB Affiliation Scores by Group and Pre- and Post-Substance Use (N=31)
 ```{r wrangle data for h1 boxplot, echo=FALSE}
@@ -398,6 +407,7 @@ h1_box <- coefficents_long %>%
   gather(time, value, -group_type,-client_number, -surface) %>%
   mutate(affiliation = as.numeric(value),
          time_f = as.factor(time),
+         time_f = factor(time_f, levels = c("pre","post")),
          sasb_surface = factor(surface, labels = c("SOST", "SOSI", "SSOT", "SSOI")),
          sasb_surface = factor(sasb_surface, levels = c("SOST", "SOSI", "SSOT", "SSOI"))) %>%
   dplyr::select(client_number, sasb_surface, time_f, group_type, affiliation, -value, -time)
@@ -419,6 +429,7 @@ h1_box %>%
 ```
 
 
+### 2. Paired Sample T-tests for Difference Scores
 
 Paired T-test for pre and post difference scores in affiliation for all surfaces and all groups - not comparing groups - and for interpersonal surfaces.
 ```{r interpersonal surface tests, echo=FALSE}
@@ -458,6 +469,7 @@ sasb_residuals <- bind_cols(sasb_residuals_noid, coef_group) %>%
   dplyr::select(post_id, group, 2:11)
 ```
 
+### 3. Group Differences using Independent T-Tests (H1)
 
 ```{r indep t-tests for residuals}
 h1_t_tests <- sasb_residuals %>%
@@ -507,28 +519,93 @@ h1_final <- h1_t_tests %>%
 ```
 
 
-## **Hypothesis 2**: Adolescents who reported depressants (alcohol, marijuana, narcotics) as their drug of choice will rate their significant others as more sulking and resentful prior to using compared to adolescents who do not report depressants as their drug of choice. 
+## **Hypothesis 2** 
+
+H2: Adolescents who reported depressants (alcohol, marijuana, narcotics) as their drug of choice will rate their significant others as more sulking and resentful prior to using compared to adolescents who do not report depressants as their drug of choice. 
 ```{r}
 
 ```
 
 
-## **Hypothesis 3**: Participants seeking treatment for substance abuse will report greater hoped-for introject (self-concept) affiliation following use of their substance of choice compared to participants not seeking treatment for substance abuse.
+## **Hypothesis 3** 
 
-Technically, we cannot answer this because we asked the participants to rate their introject at best and worst unrelated to substance abuse. The change will be unrelated to use of substances like the interpersonal surfaces.
-
-**The revised question**: Is there a difference in affiliation introject from best to worst for those seeking treatment for substance use for those not seeking treatment for substance use? 
+H3: Participants seeking treatment for substance abuse will report greater hoped-for introject (self-concept) affiliation following use of their substance of choice compared to participants not seeking treatment for substance abuse.
 
 Analyses are almost identical to H1 but with the introject affiliation surface, surface 1. The analyses include the following:
 1. Visualize introject affiliation differences between groups at their reported 'best' and at their reported 'worst'. Boxplots.
 2. Test differences in introject affiliation in both groups using paired t-tests.
 3. Calculate residual change scores for introject (worst predicted by best) and compare differences in residuals by group (substance or no-substance).
-4. Visualize test statistics. 
 
+### 1. Boxplot for Affiliation in Introject (H3)
 ```{r}
-
+h3_box <- coefficents_long %>%
+  filter(surface == "surf_1") %>%
+  dplyr::select(-group) %>%
+  gather(time, value, -group_type,-client_number, -surface) %>%
+  mutate(affiliation = as.numeric(value),
+         time_f = as.factor(time),
+         time_f = factor(time_f, levels = c("pre","post")),
+         sasb_surface = factor(surface, labels = c("int-aff")),
+         sasb_surface = factor(sasb_surface, levels = c("int-aff"))) %>%
+  dplyr::select(client_number, sasb_surface, time_f, group_type, affiliation, -value, -time)
 ```
 
+```{r}
+h3_box %>%
+  ggplot(aes(time_f, affiliation)) +
+  geom_boxplot(aes(color=group_type)) +
+  #geom_point(aes(color=group_type))+
+  #facet_wrap(~sasb_surface) + 
+  guides(color=guide_legend(title="Group")) +
+  labs(x = "Time",
+       y = "SASB Affiliation",
+       title = "Boxplots of SASB Affiliation by Interpersonal Surfaces \nand Group Pre and Post Substance Use",
+       caption = "Note. SOST = Significant Other to Subject Transitive; SOSI = Significant Other to Subject Intransitive; \nSSOT = Subject to Significant Other Transitive; SSOI = Subject to Significant Other Intransitive") +
+  scale_color_manual(values=c("#AAAAAA", "#60B2FF")) +
+  theme(plot.caption = element_text(hjust = 0))
+```
+
+
+### 2. Paired Sample T-tests for Difference Scores (H3)
+
+Paired T-test for pre and post difference scores in affiliation for all surfaces and all groups - not comparing groups - and for interpersonal surfaces.
+```{r introject surface tests, echo=FALSE}
+coefficents_long %>%
+  filter(surface == "surf_1") %>%
+  group_by(surface, group) %>%
+  do(tidy(t.test(.$pre, .$post, paired=TRUE)))  
+```
+
+
+
+### 3. Group Differences using Independent T-Tests (H3)
+```{r}
+
+h3_final <- h1_t_tests %>%
+  unnest(tidied) %>%
+  dplyr::select(surface, statistic, p.value, conf.low, conf.high) %>%
+  filter(surface == "surf_1") %>%
+  mutate(surface = factor(surface, levels = c("surf_1")),
+         sasb_surface = factor(surface, labels = c("int-aff")),
+         sasb_surface = factor(sasb_surface, levels = c("int-aff")))
+```  
+  
+```{r graph h3 t-tests, echo=FALSE}  
+  h3_final %>%
+  ggplot(aes(statistic, sasb_surface)) +
+  geom_point() +
+  geom_errorbarh(aes(xmin = conf.low,
+                     xmax = conf.high)) +
+  labs(y = "SASB Surface",
+       x = "T Statistic",
+       title = "Independent T-Tests Comparing Differences in Residual Change \non SASB Introject Surface for Affiliation for Pre- and Post-Substance Use (95% CI)",
+       caption = "Note. int-aff= introject affiliation; Dashed lines indicate +/- 1.96 T-Value") +
+  coord_flip() +
+  xlim(2,-2) +
+  geom_vline(xintercept = 1.96, linetype="dashed") +
+  geom_vline(xintercept = -1.96, linetype="dashed") +
+  theme(plot.caption = element_text(hjust = 0))
+```
 
 
 
@@ -539,7 +616,9 @@ knitr::knit_exit()
 ```
 
 
-## Hypothesis 4: Participants seeking treatment for substance abuse will report less negative affect following use of their substance of choice compared to participants not seeking treatment for substance abuse.
+## Hypothesis 4
+
+H4: Participants seeking treatment for substance abuse will report less negative affect following use of their substance of choice compared to participants not seeking treatment for substance abuse.
 
 ```{r Process PANAS Data, echo=FALSE}
 # 1. Make a smaller version of data focused on PANAS
