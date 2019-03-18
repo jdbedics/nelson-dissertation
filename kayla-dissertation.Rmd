@@ -223,8 +223,6 @@ int <-  kayla_processed %>%
   dplyr::select(client_number, group, surf_1_1, surf_1_2, surf_2_1, surf_2_2)
 ```
 
-Interpersonal Surfaces
-
 ```{r sost and sosi pre weight, echo=FALSE}
 sosp <- kayla_processed %>%
   mutate(surf_3_1 = (sostcl1p*0) + (sostcl2p*4.5) + (sostcl3p*7.8) + (sostcl4p*4.5) + (sostcl5p*0) + (sostcl6p*-4.5) + (sostcl7p*-7.8) + (sostcl8p*-4.5),
@@ -366,8 +364,7 @@ Add depressive versus stimulant category to data
 
 ## Overall Descriptive Statistics
 
-Kayla, this will produce data for an APA table of means for your surfances.  They are not coded in a specific way. Here is the key:
-surf_1	INTAFF; surf_2	INTAUT; surf_3 SOSTAFF; surf_4 SOSTAUT; surf_5 SOSIAFF; surf_6 SOSIAUT; surf_7 SSOTAFF; surf_8 SSOTAUT; surf_9 SSOIAFF;surf_10 SSOIAUT
+Here is the key: surf_1	INTAFF; surf_2	INTAUT; surf_3 SOSTAFF; surf_4 SOSTAUT; surf_5 SOSIAFF; surf_6 SOSIAUT; surf_7 SSOTAFF; surf_8 SSOTAUT; surf_9 SSOIAFF;surf_10 SSOIAUT
 
 ```{r descriptive stats, echo=FALSE}
 coefficents_long %>%
@@ -381,9 +378,6 @@ coefficents_long %>%
             post_min = min(post, na.rm=TRUE),
             post_max = max(post, na.rm=TRUE)) %>%
   kable()
-
-# we'll have to do this with the PANAS!!!
-
 ```
 
 
@@ -438,6 +432,27 @@ coefficents_long %>%
   group_by(surface, group) %>%
   do(tidy(t.test(.$pre, .$post, paired=TRUE)))  
 ```
+
+Straightforward Paired T-Tests for SASB Surfaces 3, 5, 7, 9
+```{r}
+# Here's the formula
+#result <- t.test(before, after, paired = TRUE)
+# have to use coefficient data in wide format
+
+# Surface 3
+coefficients %>%
+  group_by(group) %>%
+  summarize(statistic = t.test(unlist(surf_3_1), unlist(surf_3_2), paired = TRUE)$statistic,
+            p_value = t.test(unlist(surf_3_1), unlist(surf_3_2), paired = TRUE)$p.value)
+
+# Surface 5 # kayla do the rest
+
+# Surface 7
+
+# Surface 9
+
+```
+
 
 
 ```{r Calculating Residuals}
