@@ -623,14 +623,6 @@ h3_final <- h1_t_tests %>%
 ```
 
 
-
-
-
-```{r}
-knitr::knit_exit()
-```
-
-
 ## Hypothesis 4
 
 H4: Participants seeking treatment for substance abuse will report less negative affect following use of their substance of choice compared to participants not seeking treatment for substance abuse.
@@ -638,8 +630,8 @@ H4: Participants seeking treatment for substance abuse will report less negative
 ```{r Process PANAS Data, echo=FALSE}
 # 1. Make a smaller version of data focused on PANAS
 panas_data <- kayla_processed %>% dplyr::select(client_number, group, panas1_1, panas1_2, panas2_1, panas2_2)  %>%
-  mutate(group_type = factor(group, labels = c("Non-Substance", "Substance Use")),
-         group_type = factor(group_type, levels = c("Substance", "Non-Substance")))
+  mutate(group_type = factor(group, labels = c("Non-Substance", "Substance Use")))#,
+         #group_type = factor(group_type, levels = c("Substance", "Non-Substance")))
 
 # 2. calculate positive residual change
 panas1_fit <- lm(panas1_2 ~ panas1_1, data = panas_data)
@@ -724,28 +716,52 @@ panas_data %>%
   gather(panas_negative, score, panas2_1, panas2_2, -client_number) %>%
   ggplot(aes(x=panas_negative, y=score)) +
   geom_boxplot() +
-  geom_jitter(aes(color=panas_negative)) 
+  geom_jitter(aes(color=panas_negative)) +
+  theme(legend.position = "none")
 ```
 
 #### PANAS Negative Affect Change by Group
 ```{r}
 panas_data %>% 
   gather(panas_negative, score, panas2_1, panas2_2, -client_number) %>%
-    mutate(panas_negative = factor(panas_negative, labels = c("Prior", "After"))) %>%
-  ggplot(aes(x=panas_negative, y=score, group=panas_negative)) +
+    mutate(panas_negative = factor(panas_negative, labels = c("Pre", "Post"))) %>%
+  ggplot(aes(x=panas_negative, y=score)) +
   geom_boxplot() +
   geom_jitter(aes(color=panas_negative), size=2) +
   facet_wrap(~ group_type) +
   scale_color_manual(values=c("#12100F", "#60B2FF"), name="Negative Affect") +
   labs(x="Negative Affect",
-       title = "Change in Negative Affect (PANAS) Prior and After Substance Use") 
+       title = "Figure #. Change in Negative Affect (PANAS) Prior and After Substance Use") +
+  theme(legend.position = "none")
 ```
 
 
-```{r model negative affect}
-negative_fit <- lm(panas2_res ~ group, data = panas_processed)
-display(negative_fit)
+
+
+```{r overall difference in negative affect, echo=FALSE}
+t.test(panas_data$panas2_2, panas_data$panas2_1, paired = TRUE, alternative = "two.sided")
 ```
+The difference in negative affect change following substance use was non-significant between substance and non-substance use participants (t(30)=-1.77, p=0.09)
+
+
+```{r substance use people only, echo=false}
+su <- panas_data %>%
+  filter(group_type == "Substance Use")
+
+t.test(su$panas2_2, su$panas2_1, paired = TRUE, alternative = "two.sided")
+# substance use people had a significant reduction (again, just change isn't differen from nongroup)
+```
+Substance use participants showed a significant decrease in negative following substance use (t(19)=-2.16, p=0.04)
+
+```{r non-substance use people only, echo=false}
+nsu <- panas_data %>%
+  filter(group_type == "Non-Substance")
+
+t.test(nsu$panas2_2, nsu$panas2_1, paired = TRUE, alternative = "two.sided")
+# non-substance use people had a non-significant reduction 
+```
+Non-substance use participants did not show a significant decrease in negative following substance use (t(10)=-0.11, p=0.91)
+
 
 
 ## Hypothesis 5: Participants not seeking treatment for substance abuse will report greater positive affect following substance use compared to participants seeking treatment for substance abuse.
@@ -758,32 +774,62 @@ display(negative_fit)
 ```{r}
 panas_data %>% 
   gather(panas_positive, score, panas1_1, panas1_2, -client_number) %>%
-  ggplot(aes(x=panas_positive, y=score, group=panas_positive)) +
+  ggplot(aes(x=panas_positive, y=score)) +
   geom_boxplot() +
   geom_jitter(aes(color=panas_positive)) +
-  scale_color_manual(values=c("#12100F", "#60B2FF"))
+  theme(legend.position = "none")
 ```
 
-#### PANAS Positive Change by Group
+#### PANAS Positive Affect Change by Group
 ```{r}
 panas_data %>% 
   gather(panas_positive, score, panas1_1, panas1_2, -client_number) %>%
-    mutate(panas_positive = factor(panas_positive, labels = c("Prior", "After"))) %>%
-  ggplot(aes(x=panas_positive, y=score, group=panas_positive)) +
+    mutate(panas_positive = factor(panas_positive, labels = c("Pre", "Post"))) %>%
+  ggplot(aes(x=panas_positive, y=score)) +
   geom_boxplot() +
   geom_jitter(aes(color=panas_positive), size=2) +
   facet_wrap(~ group_type) +
   scale_color_manual(values=c("#12100F", "#60B2FF"), name="Positive Affect") +
-  labs(x="Positive Affect",
-       title = "Change in Positive Affect (PANAS) Prior and After Substance Use") 
+  labs(x="Positive",
+       title = "Figure #. Change in Positive Affect (PANAS) Prior and After Substance Use") +
+  theme(legend.position = "none")
 ```
 
-### Model Hypothesis 5: Positive Affect PANAS
+
+
+
+```{r overall difference in positive affect, echo=FALSE}
+t.test(panas_data$panas2_2, panas_data$panas2_1, paired = TRUE, alternative = "two.sided")
+```
+The difference in negative affect change following substance use was non-significant between substance and non-substance use participants (t(30)=-1.77, p=0.09)
+
+
+```{r substance use people only positive, echo=false}
+su <- panas_data %>%
+  filter(group_type == "Substance Use")
+
+t.test(su$panas2_2, su$panas2_1, paired = TRUE, alternative = "two.sided")
+# substance use people had a significant reduction (again, just change isn't differen from nongroup)
+```
+Substance use participants showed a significant decrease in negative following substance use (t(19)=-2.16, p=0.04)
+
+```{r non-substance use people only positive, echo=false}
+nsu <- panas_data %>%
+  filter(group_type == "Non-Substance")
+
+t.test(nsu$panas2_2, nsu$panas2_1, paired = TRUE, alternative = "two.sided")
+# non-substance use people had a non-significant reduction 
+```
+Non-substance use participants did not show a significant decrease in negative following substance use (t(10)=-0.11, p=0.91)
+
+
+
+
 
 ```{r}
-positive_fit <- lm(panas1_res ~ group, data = panas_processed)
-display(positive_fit)
+knitr::knit_exit()
 ```
+
 
 
 ## Hypothesis 6: Exploratory analyses will examine change in relationship and emotions associated with parental monitoring, peer acceptance, and diagnostic group.
