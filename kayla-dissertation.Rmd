@@ -1,7 +1,7 @@
 ---
 title: "Nelson Data Analysis for Doctoral Dissertation"
 author: "Kayla Nelson"
-date: "2/26/2019"
+date: "4/15/2019"
 output:
   html_document:
     toc: true
@@ -637,9 +637,9 @@ H4: Participants seeking treatment for substance abuse will report less negative
 
 ```{r Process PANAS Data, echo=FALSE}
 # 1. Make a smaller version of data focused on PANAS
-panas_data <- kayla_processed %>% select(client_number, group, panas1_1, panas1_2, panas2_1, panas2_2)  %>%
-  mutate(group_type = factor(group, labels = c("Control", "Experimental")),
-         group_type = factor(group_type, levels = c("Experimental", "Control")))
+panas_data <- kayla_processed %>% dplyr::select(client_number, group, panas1_1, panas1_2, panas2_1, panas2_2)  %>%
+  mutate(group_type = factor(group, labels = c("Non-Substance", "Substance Use")),
+         group_type = factor(group_type, levels = c("Substance", "Non-Substance")))
 
 # 2. calculate positive residual change
 panas1_fit <- lm(panas1_2 ~ panas1_1, data = panas_data)
@@ -654,7 +654,7 @@ panas2_fit <- lm(panas2_2 ~ panas2_1, data = panas_data)
 resid2 <- augment(panas2_fit)
   
 resid2_2 <- resid2 %>%
-  select(.std.resid) %>%
+  dplyr::select(.std.resid) %>%
   rename(panas2_res = .std.resid)
 
 #create a data file with residuals added 
@@ -709,8 +709,9 @@ panas_data %>%
 ```
 Interpret:
 
-Empirical Cumulative Distribution Function for Negative (Kayla - you do this one)
+Empirical Cumulative Distribution Function for Negative (Kayla - you do this one - just like above)
 ```{r}
+
 ```
 Interpret: 
 
@@ -721,7 +722,7 @@ Interpret:
 ```{r}
 panas_data %>% 
   gather(panas_negative, score, panas2_1, panas2_2, -client_number) %>%
-  ggplot(aes(x=panas_negative, y=score, group=panas_negative)) +
+  ggplot(aes(x=panas_negative, y=score)) +
   geom_boxplot() +
   geom_jitter(aes(color=panas_negative)) 
 ```
