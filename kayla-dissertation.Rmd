@@ -540,6 +540,25 @@ h1_final <- h1_t_tests %>%
 ##############################################################################
 ```
 
+```{r h1 assumption}
+#Shapiro-Wilks test for exam and numeracy for whole sample
+shapiro.test(rexam$exam)
+shapiro.test(rexam$numeracy)
+
+
+
+#Shapiro-Wilks test for exam and numeracy split by university
+by(rexam$exam, rexam$uni, shapiro.test)
+by(rexam$numeracy, rexam$uni, shapiro.test)
+
+
+#Levene's test for comparison of variances of exam scores in the two universities.
+leveneTest(rexam$exam, rexam$uni)
+leveneTest(rexam$exam, rexam$uni, center = mean)
+leveneTest(rexam$numeracy, rexam$uni)
+```
+
+
 
 ## **Hypothesis 2** 
 
@@ -595,6 +614,25 @@ h2_data_na %>%
   group_by(doc_fa) %>%
   summarize(mean = mean(sosicl6p),
             sd = sd(sosicl6p))
+```
+
+
+```{r h2 assumption}
+#Shapiro-Wilks test for exam and numeracy for whole sample
+shapiro.test(rexam$exam)
+shapiro.test(rexam$numeracy)
+
+
+
+#Shapiro-Wilks test for exam and numeracy split by university
+by(rexam$exam, rexam$uni, shapiro.test)
+by(rexam$numeracy, rexam$uni, shapiro.test)
+
+
+#Levene's test for comparison of variances of exam scores in the two universities.
+leveneTest(rexam$exam, rexam$uni)
+leveneTest(rexam$exam, rexam$uni, center = mean)
+leveneTest(rexam$numeracy, rexam$uni)
 ```
 
 
@@ -676,6 +714,24 @@ h3_final <- h1_t_tests %>%
   geom_vline(xintercept = 1.96, linetype="dashed") +
   geom_vline(xintercept = -1.96, linetype="dashed") +
   theme(plot.caption = element_text(hjust = 0))
+```
+
+```{r h3 assumption}
+#Shapiro-Wilks test for exam and numeracy for whole sample
+shapiro.test(rexam$exam)
+shapiro.test(rexam$numeracy)
+
+
+
+#Shapiro-Wilks test for exam and numeracy split by university
+by(rexam$exam, rexam$uni, shapiro.test)
+by(rexam$numeracy, rexam$uni, shapiro.test)
+
+
+#Levene's test for comparison of variances of exam scores in the two universities.
+leveneTest(rexam$exam, rexam$uni)
+leveneTest(rexam$exam, rexam$uni, center = mean)
+leveneTest(rexam$numeracy, rexam$uni)
 ```
 
 
@@ -827,6 +883,25 @@ t.test(nsu$panas2_2, nsu$panas2_1, paired = TRUE, alternative = "two.sided")
 Non-substance use participants did not show a significant decrease in negative following substance use (t(10)=-0.11, p=0.91)
 
 
+```{r h4 assumption}
+#Shapiro-Wilks test for exam and numeracy for whole sample
+shapiro.test(rexam$exam)
+shapiro.test(rexam$numeracy)
+
+
+
+#Shapiro-Wilks test for exam and numeracy split by university
+by(rexam$exam, rexam$uni, shapiro.test)
+by(rexam$numeracy, rexam$uni, shapiro.test)
+
+
+#Levene's test for comparison of variances of exam scores in the two universities.
+leveneTest(rexam$exam, rexam$uni)
+leveneTest(rexam$exam, rexam$uni, center = mean)
+leveneTest(rexam$numeracy, rexam$uni)
+```
+
+
 
 ## Hypothesis 5: Participants not seeking treatment for substance abuse will report greater positive affect following substance use compared to participants seeking treatment for substance abuse.
 
@@ -885,6 +960,23 @@ t.test(nsu$panas1_2, nsu$panas1_1, paired = TRUE, alternative = "two.sided")
 Non-substance use participants did not show a significant decrease in negative following substance use (t(10)=-0.33, p=0.75)
 
 
+```{r h5 assumption}
+#Shapiro-Wilks test for exam and numeracy for whole sample
+shapiro.test(rexam$exam)
+shapiro.test(rexam$numeracy)
+
+
+
+#Shapiro-Wilks test for exam and numeracy split by university
+by(rexam$exam, rexam$uni, shapiro.test)
+by(rexam$numeracy, rexam$uni, shapiro.test)
+
+
+#Levene's test for comparison of variances of exam scores in the two universities.
+leveneTest(rexam$exam, rexam$uni)
+leveneTest(rexam$exam, rexam$uni, center = mean)
+leveneTest(rexam$numeracy, rexam$uni)
+```
 
 
 
@@ -967,7 +1059,7 @@ cor.test(h6_data$panas1_res, h6_data$psmtot) # positive correlation but not sign
 
 
 
-### H63: The more more peer acceptance the more affiliative a significant other is seen acting toward the participant following substance use. 
+### H63: The more peer acceptance the more affiliative a significant other is seen acting toward the participant following substance use. 
 ```{r acceptance-affiliation}
 h63_data <- h6_data %>%
   dplyr::select(pmtot, psmtot) %>%
@@ -992,14 +1084,28 @@ h63_data %>%
 cor.test(h63_data$surf_5, h63_data$psmtot) # n.s 
 ```
 
+```{r h6 assumption}
+#Shapiro-Wilks test for exam and numeracy for whole sample
+shapiro.test(rexam$exam)
+shapiro.test(rexam$numeracy)
+
+
+
+#Shapiro-Wilks test for exam and numeracy split by university
+by(rexam$exam, rexam$uni, shapiro.test)
+by(rexam$numeracy, rexam$uni, shapiro.test)
+
+
+#Levene's test for comparison of variances of exam scores in the two universities.
+leveneTest(rexam$exam, rexam$uni)
+leveneTest(rexam$exam, rexam$uni, center = mean)
+leveneTest(rexam$numeracy, rexam$uni)
+```
 
 
 ```{r everyting after here is scratch, include=FALSE, echo=FALSE}
 knitr::knit_exit()
 ```
-
-#### Scratch
-
 
 
 ```{r h4-visualization}
