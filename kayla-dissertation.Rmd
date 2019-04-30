@@ -1,21 +1,26 @@
 ---
-title: "Nelson Data Analysis for Doctoral Dissertation"
+title: "Data Analysis for Kayla Nelson's Doctoral Dissertation"
 author: "Kayla Nelson"
-date: "4/22/2019"
+date: "`r format(Sys.time(), '%d %B, %Y')`"
 output:
+  word_document:
+    toc: yes
+  pdf_document:
+    toc: yes
   html_document:
-    toc: true
-    toc_float: true 
+    toc: yes
+    toc_float: yes
 ---
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE, warning = FALSE, message = FALSE)
+knitr::opts_chunk$set(echo = FALSE, warning = FALSE, message = FALSE)
 #knitr::opts_knit$set(root.dir=normalizePath('../'))
 ```
 
 
+# Data Import and Wrangling
 
-```{r load libraries, echo=FALSE}
+```{r load libraries}
 library(httr)
 library(tidyverse)
 library(janitor)
@@ -28,25 +33,25 @@ theme_set(theme_light())
 ```
 
 
-```{r import data, eval=FALSE, include=FALSE}
-#if (!file.exists('kayla.xlsx')) {
-#   data <- GET('osf.io/xnfg5//?action=download',
-#                write_disk('kayla.xlsx'))#, overwrite = TRUE))
-#}
+```{r import data, eval=FALSE}
+if (!file.exists('kayla.xlsx')) {
+   data <- GET('osf.io/xnfg5//?action=download',
+                write_disk('kayla.xlsx'))#, overwrite = TRUE))
+}
 
-# get data and clean
-#kayla.tb <- readxl::read_excel('kayla.xlsx')
-#kayla.tb <- kayla.tb %>%  
-#  clean_names()
-# saved it as an .rds
-#saveRDS(kayla.tb, file = "kayla.rds")
+ get data and clean
+kayla.tb <- readxl::read_excel('kayla.xlsx')
+kayla.tb <- kayla.tb %>%  
+  clean_names()
+ saved it as an .rds
+saveRDS(kayla.tb, file = "kayla.rds")
 ```
 
-```{r open data, echo=FALSE}
+```{r open data}
 kayla_raw  <- read_rds("kayla.rds")
 ```
 
-```{r create processed data, echo=FALSE}
+```{r create processed data}
 # we rename introject first
 kayla_processed <- kayla_raw %>%
   rename(intcl1b = sasb_1, 
@@ -213,7 +218,7 @@ kayla_processed <- kayla_raw %>%
 ```
 
 
-```{r int weight, echo=FALSE}
+```{r int weight}
 ###### 1. Introject
 int <-  kayla_processed %>%
   mutate(surf_1_1 = (intcl1b*0) + (intcl2b*4.5) + (intcl3b*7.8) + (intcl4b*4.5) + (intcl5b*0) + (intcl6b*-4.5) + (intcl7b*-7.8) + (intcl8b*-4.5),
@@ -223,7 +228,7 @@ int <-  kayla_processed %>%
   dplyr::select(client_number, group, surf_1_1, surf_1_2, surf_2_1, surf_2_2)
 ```
 
-```{r sost and sosi pre weight, echo=FALSE}
+```{r sost and sosi pre weight}
 sosp <- kayla_processed %>%
   mutate(surf_3_1 = (sostcl1p*0) + (sostcl2p*4.5) + (sostcl3p*7.8) + (sostcl4p*4.5) + (sostcl5p*0) + (sostcl6p*-4.5) + (sostcl7p*-7.8) + (sostcl8p*-4.5),
          surf_4_1 = (sostcl1p*7.8) + (sostcl2p*4.5) + (sostcl3p*0) + (sostcl4p*-4.5) + (sostcl5p*-7.8) + (sostcl6p*-4.5) + (sostcl7p*0) + (sostcl8p*4.5),
@@ -233,7 +238,7 @@ sosp <- kayla_processed %>%
   dplyr::select(client_number, surf_3_1, surf_4_1, surf_5_1, surf_6_1)
 ```
 
-```{r ssot and ssoi pre weigth, echo=FALSE}
+```{r ssot and ssoi pre weigth}
 ssop <- kayla_processed %>%
   mutate(surf_7_1 = (ssotcl1p*0) + (ssotcl2p*4.5) + (ssotcl3p*7.8) + (ssotcl4p*4.5) + (ssotcl5p*0) + (ssotcl6p*-4.5) + (ssotcl7p*-7.8) + (sostcl8p*-4.5),
          surf_8_1 = (ssotcl1p*7.8) + (ssotcl2p*4.5) + (ssotcl3p*0) + (ssotcl4p*-4.5) + (ssotcl5p*-7.8) + (ssotcl6p*-4.5) + (ssotcl7p*0) + (ssotcl8p*4.5),
@@ -243,7 +248,7 @@ ssop <- kayla_processed %>%
   dplyr::select(client_number, surf_7_1, surf_8_1, surf_9_1, surf_10_1)
 ```
 
-```{r sost-sosi after weights, echo=FALSE}
+```{r sost-sosi after weights}
 sosa <- kayla_processed %>%
   mutate(surf_3_2 = (sostcl1a*0) + (sostcl2a*4.5) + (sostcl3a*7.8) + (sostcl4a*4.5) + (sostcl5a*0) + (sostcl6a*-4.5) + (sostcl7a*-7.8) + (sostcl8a*-4.5),
          surf_4_2 = (sostcl1a*7.8) + (sostcl2a*4.5) + (sostcl3a*0) + (sostcl4a*-4.5) + (sostcl5a*-7.8) + (sostcl6a*-4.5) + (sostcl7a*0) + (sostcl8a*4.5),
@@ -253,7 +258,7 @@ sosa <- kayla_processed %>%
   dplyr::select(client_number, surf_3_2, surf_4_2, surf_5_2, surf_6_2)
 ```
 
-```{r ssot-ssoi after, echo=FALSE}
+```{r ssot-ssoi after}
 ssoa <- kayla_processed %>%
   mutate(surf_7_2 = (ssotcl1a*0) + (ssotcl2a*4.5) + (ssotcl3a*7.8) + (ssotcl4a*4.5) + (ssotcl5a*0) + (ssotcl6a*-4.5) + (ssotcl7a*-7.8) + (sostcl8a*-4.5),
          surf_8_2 = (ssotcl1a*7.8) + (ssotcl2a*4.5) + (ssotcl3a*0) + (ssotcl4a*-4.5) + (ssotcl5a*-7.8) + (ssotcl6a*-4.5) + (ssotcl7a*0) + (ssotcl8a*4.5),
@@ -263,7 +268,7 @@ ssoa <- kayla_processed %>%
   dplyr::select(client_number, surf_7_2, surf_8_2, surf_9_2, surf_10_2)
 ```
 
-```{r parents code, echo=FALSE}
+```{r parents code}
 psosp <- kayla_processed %>%
   mutate(surf_11_1 = (psostcl1p*0) + (psostcl2p*4.5) + (psostcl3p*7.8) + (psostcl4p*4.5) + (psostcl5p*0) + (psostcl6p*-4.5) + (psostcl7p*-7.8) + (psostcl8p*-4.5),
          surf_12_1 = (psostcl1p*7.8) + (psostcl2p*4.5) + (psostcl3p*0) + (psostcl4p*-4.5) + (psostcl5p*-7.8) + (psostcl6p*-4.5) + (psostcl7p*0) + (psostcl8p*4.5),
@@ -303,7 +308,7 @@ pssoa <- kayla_processed %>%
 ```
 
 
-```{r SASB weights Long Format, echo=FALSE}
+```{r SASB weights Long Format}
 # Create trimmed down coefficient table that does not include parents.
 coefficients <- bind_cols(int, sosp, ssop, sosa, ssoa) %>% 
   dplyr::select(-client_number1, -client_number2, -client_number3, -client_number4)# %>%
@@ -323,7 +328,7 @@ coefficents_long <- coefficients %>%
 ```
 
 
-```{r summarize panas subscales, echo=FALSE}
+```{r summarize panas subscales}
 kayla_processed$panas1_1 <-  kayla_processed$panas_p1 + kayla_processed$panas_p3 + kayla_processed$panas_p5 + kayla_processed$panas_p9 + kayla_processed$panas_p10 + kayla_processed$panas_p12 + kayla_processed$panas_p14 + kayla_processed$panas_p16 + kayla_processed$panas_p17+ kayla_processed$panas_p19
 
 kayla_processed$panas2_1 <-  kayla_processed$panas_p2+  kayla_processed$panas_p4+  kayla_processed$panas_p6+  kayla_processed$panas_p7+  kayla_processed$panas_p8+  kayla_processed$panas_p11+  kayla_processed$panas_p13+  kayla_processed$panas_p15+  kayla_processed$panas_p18+  kayla_processed$panas_p20
@@ -334,7 +339,7 @@ kayla_processed$panas2_2 <- kayla_processed$panas_a2+  kayla_processed$panas_a4+
 ```
 
 
-```{r PANAS Reliability, echo=FALSE, include=FALSE}
+```{r PANAS Reliability, include=FALSE, eval=FALSE}
 # Positive Affect Score - Prior
 panaspospre.df <- kayla_processed[ , c("panas_p1", "panas_p3", "panas_p5", "panas_p9", "panas_p12", "panas_p14", "panas_p16", "panas_p17", "panas_p19")] 
 CronbachAlpha(panaspospre.df) 
@@ -357,7 +362,7 @@ CronbachAlpha(panasnegafter.df) # .87
 
 # Overall Descriptive Statistics
 
-```{r descriptive stats, echo=FALSE}
+```{r descriptive stats}
 coefficents_long %>%
   group_by(group_type, surface) %>%
   summarise(pre_mean = mean(pre, na.rm=TRUE),
@@ -370,21 +375,20 @@ coefficents_long %>%
             post_max = max(post, na.rm=TRUE)) %>%
   kable()
 ```
-Key: surf_1	INTAFF; surf_2	INTAUT; surf_3 SOSTAFF; surf_4 SOSTAUT; surf_5 SOSIAFF; surf_6 SOSIAUT; surf_7 SSOTAFF; surf_8 SSOTAUT; surf_9 SSOIAFF;surf_10 SSOIAUT
+
+Key: surf_1	= INTAFF; surf_2	= INTAUT; surf_3 = SOSTAFF; surf_4 = SOSTAUT; surf_5 = SOSIAFF; surf_6 = SOSIAUT; surf_7 = SSOTAFF; surf_8 = SSOTAUT; surf_9 = SSOIAFF; surf_10 = SSOIAUT.
 
 # Hypothesis 1
 
-H1: Participants seeking treatment for substance abuse will report greater hoped-for affiliation in a reported significant-other relationship following use of their substance of choice compared to participants not seeking treatment for substance abuse. (Do not analyze drug of choice as stated in data analytic plan)
+H1: Participants seeking treatment for substance abuse will report greater hoped-for affiliation in a reported significant-other relationship following use of their substance of choice compared to participants not seeking treatment for substance abuse. 
 
-1. Boxplot for Affiliation Scores by Group at Pre- and Post. 
-2. Descriptive analyses using pre and post paired t-tests.
-3. Differences between groups (substance versus non-substance) in residual change for affiliation
-4. Visualization of T-test statistics.
-
+1. Boxplot for Affiliation Scores by Group at Pre- and Post-Substance Use. 
+2. Independent T-tests for H1.
+3. Assumptions for H1.
 
 ## 1. Boxplot for H1
 
-```{r wrangle data for h1 boxplot, echo=FALSE}
+```{r h1-data-boxplot}
 h1_box <- coefficents_long %>%
   filter(surface == "surf_3" | surface == "surf_5" | surface == "surf_7" | surface == "surf_9") %>%
   dplyr::select(-group) %>%
@@ -397,8 +401,7 @@ h1_box <- coefficents_long %>%
   dplyr::select(client_number, sasb_surface, time_f, group_type, affiliation, -value, -time)
 ```
 
-  
-```{r FIG1 h1 boxplot, echo=FALSE}
+```{r fig-1-h1-boxplot}
 h1_box %>%
   ggplot(aes(time_f, affiliation, color=group_type)) +
   geom_boxplot(aes(color=group_type)) +
@@ -413,44 +416,10 @@ h1_box %>%
 ```
 
 
-```{r interpersonal surface tests, echo=FALSE, include=FALSE}
-#Paired T-test for pre and post difference scores in affiliation for all surfaces and all groups - not comparing groups - and for interpersonal surfaces.
-
-coefficents_long %>%
-  filter(surface == "surf_3" | surface == "surf_5" | surface == "surf_7" | surface == "surf_9") %>%
-  group_by(surface, group) %>%
-  do(tidy(t.test(.$pre, .$post, paired=TRUE)))  
-```
+## 2. Independent T-Tests for H1
 
 
-```{r simple paired t-tests, include=FALSE, echo=FALSE, eval=FALSE}
-# Surface 3
-coefficients %>%
-  group_by(group) %>%
-  summarize(statistic = t.test(unlist(surf_3_1), unlist(surf_3_2), paired = TRUE)$statistic,
-            p_value = t.test(unlist(surf_3_1), unlist(surf_3_2), paired = TRUE)$p.value)
-# Surface 5 
-coefficients %>%
-  group_by(group) %>%
-  summarize(statistic = t.test(unlist(surf_5_1), unlist(surf_5_2), paired = TRUE)$statistic,
-            p_value = t.test(unlist(surf_5_1), unlist(surf_5_2), paired = TRUE)$p.value)
-
-# Surface 7
-coefficients %>%
-  group_by(group) %>%
-  summarize(statistic = t.test(unlist(surf_7_1), unlist(surf_7_2), paired = TRUE)$statistic,
-            p_value = t.test(unlist(surf_7_1), unlist(surf_7_2), paired = TRUE)$p.value)
-
-# Surface 9
-coefficients %>%
-  group_by(group) %>%
-  summarize(statistic = t.test(unlist(surf_9_1), unlist(surf_9_2), paired = TRUE)$statistic,
-            p_value = t.test(unlist(surf_9_1), unlist(surf_9_2), paired = TRUE)$p.value)
-```
-
-
-
-```{r Calculating Residuals}
+```{r h1-residuals}
 # https://cran.r-project.org/web/packages/broom/vignettes/broom.html
 coeff_model <- coefficents_long %>%
   nest(-surface) %>%  
@@ -479,9 +448,9 @@ sasb_residuals <- bind_cols(sasb_residuals_noid, coef_group) %>%
   dplyr::select(post_id, group, 2:11)
 ```
 
-## 3. Independent T-Tests for H1
 
-```{r indep t-tests for residuals, echo=FALSE}
+
+```{r h1-tests}
 h1_t_tests <- sasb_residuals %>%
   gather(surface, value, -post_id, -group) %>%
   nest(-surface) %>%
@@ -500,7 +469,590 @@ h1_t_tests %>%
          sasb_surface = factor(sasb_surface, levels = c("SOST", "SOSI", "SSOT", "SSOI"))) %>%
   kable()
 ```  
+
+## 3. Assumptions for H1
+
+a) Shapiro Test for H1
+```{r h1-shapiro}
+shapiro.test(sasb_residuals$surf_3)
+shapiro.test(sasb_residuals$surf_5)
+shapiro.test(sasb_residuals$surf_7)
+shapiro.test(sasb_residuals$surf_9)
+```
+
+b) Levene's Test for H1
+```{r h1-levene}
+car::leveneTest(sasb_residuals$surf_3, sasb_residuals$group)
+car::leveneTest(sasb_residuals$surf_5, sasb_residuals$group)
+car::leveneTest(sasb_residuals$surf_7, sasb_residuals$group)
+car::leveneTest(sasb_residuals$surf_9, sasb_residuals$group)
+```
+
+
+
+# Hypothesis 2
+
+H2: Adolescents who reported depressantsas their drug of choice will rate their significant others as more sulking and resentful prior to using compared to adolescents who do not report depressants as their drug of choice. 
+
+1. Boxplot for SASB Items "Sulk and Scurry by Drug of Choice.
+2. Independent T-Test for H2.
+3. Means and Standard Deviations for H2.
+4. Assumptions for H2. 
+
+## 1. Boxplot for H2
+
+```{r h2-data}
+h2_data <- kayla_processed %>%
+  dplyr::select(sosicl6p, sosicl6a, doc1) %>%
+    mutate(doc_f = if_else(doc1 %in% 1:4, "depressant", "stimulant")) %>%
+  dplyr::select(-doc1)
+```
+
+```{r h2-data-boxplot}
+h2_box <- h2_data %>%
+  gather(time, value, -doc_f) %>%
+  mutate(time_f = as.factor(time),
+         time_f = factor(time_f, labels = c("post","pre")),
+         time_f = factor(time_f, levels = c("pre","post")),)
+```
+
+```{r fig2-h2-boxplot}
+h2_box %>%
+  ggplot(aes(time_f, value)) +
+  geom_boxplot(aes(color=doc_f)) +
+  #geom_point(aes(color=group_type))+
+  #facet_wrap(~sasb_surface) + 
+  guides(color=guide_legend(title="Group")) +
+  labs(x = "Time",
+       y = "Sulk and Scurry",
+       title = "Figure 2. Boxplots of SASB Cluster 6 Significant Other Sulks and Scurrys \nand Drug Type Pre and Post Substance Use",
+       caption = "") +
+  scale_color_manual(values=c("#AAAAAA", "#60B2FF")) +
+  theme(plot.caption = element_text(hjust = 0)) +
+  geom_jitter()
+```
+
+## 2. Independent T-test for H2
+```{r h2-test-data}
+h2_data_na <- h2_data %>% 
+  filter(!is.na(sosicl6p)) %>%
+  mutate(doc_fa = as.factor((doc_f)),
+         num_6 = as.integer(sosicl6p))
+```
+
+```{r h2-test}
+#t.test(h2_data_na$sosicl6p ~ h2_data_na$doc_fa) # pre
+# data was not normally distributed.
+wilcox.test(h2_data_na$sosicl6p ~ h2_data_na$doc_fa)
+```
+
+## 3. Means and SD for H2
+```{r means-sd-h2}
+h2_data_na %>%
+  group_by(doc_fa) %>%
+  summarize(mean = mean(sosicl6p),
+            sd = sd(sosicl6p))
+```
+
+## 4. Assumptions for h2
+a) Shapiro for H2
+```{r h2-shapiro}
+shapiro.test(h2_data_na$sosicl6p) # violate so we'll use non-parametric
+hist(h2_data_na$sosicl6p)
+#h2a <- h2_data_na %>% 
+#  mutate(log = sqrt(sosicl6p))# %>%
+  #ggplot(aes(log)) +
+  #geom_histogram()
+```
+
+b) Levene's Test for H2
+```{r h2-levene}
+#Levene's test for comparison of variances of exam scores in the two universities.
+car::leveneTest(h2_data_na$sosicl6p, h2_data_na$doc_fa) #ok
+```
+
+
+
+# Hypothesis 3 
+
+H3: Participants seeking treatment for substance abuse will report greater hoped-for introject (self-concept) affiliation following use of their substance of choice compared to participants not seeking treatment for substance abuse.
+
+Analyses are almost identical to H1 but with the introject affiliation surface, surface 1. The analyses include the following:
+
+1. Boxplot for introject affiliation differences between treatment groups pre- and post-substance use.
+2. Independent t-test examining difference in residual change in introject affiliation between treatment groups.
+3. Assumptions for H3.
+
+## 1. Boxplot for H3
+```{r h3-data-boxplot}
+h3_box <- coefficents_long %>%
+  filter(surface == "surf_1") %>%
+  dplyr::select(-group) %>%
+  gather(time, value, -group_type,-client_number, -surface) %>%
+  mutate(affiliation = as.numeric(value),
+         time_f = as.factor(time),
+         time_f = factor(time_f, levels = c("pre","post")),
+         sasb_surface = factor(surface, labels = c("int-aff")),
+         sasb_surface = factor(sasb_surface, levels = c("int-aff"))) %>%
+  dplyr::select(client_number, sasb_surface, time_f, group_type, affiliation, -value, -time)
+```
+
+```{r fig3-h3-boxplot}
+h3_box %>%
+  ggplot(aes(time_f, affiliation)) +
+  geom_boxplot(aes(color=group_type)) +
+  #geom_point(aes(color=group_type))+
+  #facet_wrap(~sasb_surface) + 
+  guides(color=guide_legend(title="Group")) +
+  labs(x = "Time",
+       y = "SASB Introject Affiliation",
+       title = "Figure 3. Boxplot of SASB Introject Affiliation by Treatment Group  and Pre- and Post-Substance Use",
+       caption = "") +
+  scale_color_manual(values=c("#AAAAAA", "#60B2FF")) +
+  theme(plot.caption = element_text(hjust = 0))
+```
+
+## 2. Independent T-Test for H3
+```{r h3-test-data}
+h3_final <- h1_t_tests %>%
+  unnest(tidied) %>%
+  dplyr::select(surface, statistic, p.value, parameter, conf.low, conf.high) %>%
+  filter(surface == "surf_1") %>%
+  mutate(surface = factor(surface, levels = c("surf_1")),
+         sasb_surface = factor(surface, labels = c("int-aff")),
+         sasb_surface = factor(sasb_surface, levels = c("int-aff")))
+```  
+
+```{r h3-test}
+h3_final %>%
+  kable()
+```
+
+
+## 3. Assumptions for H3
+
+a) Shapiro for H3
+```{r h3-shapiro}
+shapiro.test(sasb_residuals$surf_1) #ok
+```
+
+b) Levene's Test for H3
+```{r h3-levene}
+car::leveneTest(sasb_residuals$surf_1, sasb_residuals$group) #ok
+```
+
+
+# Hypothesis 4
+
+H4: Participants seeking treatment for substance abuse will report less negative affect following use of their substance of choice compared to participants not seeking treatment for substance abuse.
+
+1. Summary Statistics for H4 and H5 including PANAS Positive and Negative Affect Prior and Post-Substance Use
+2. Boxplot for Change in PANAS Negative Affect by Treatment Group
+3. Independent t-test for Residual Change in PANAS Negative Affect by Treatment group
+4. Three Supplmental Paired t-tests for difference in PANAS Negative Affect 
+  a) Overall Change in PANAS Negative Affect
+  b) Change in PANAS Negative Affect for Substance-Use Group Only
+  c) Change in PANAS Negative Affect for Non-Substance-Use Group Only
+5. Assumptions for H4
+
+## 1. Summary PANAS Statistics for H4 and H5
+
+
+```{r wrangle-panas-data}
+# 1. Make a smaller version of data focused on PANAS
+panas_data <- kayla_processed %>% dplyr::select(client_number, group, panas1_1, panas1_2, panas2_1, panas2_2, pm_1, pm_2, pm_3, psm_1, psm_2, psm_3)  %>%
+  mutate(group_type = factor(group, labels = c("Non-Substance", "Substance Use")))#,
+         #group_type = factor(group_type, levels = c("Substance", "Non-Substance")))
+
+# 2. calculate positive residual change
+panas1_fit <- lm(panas1_2 ~ panas1_1, data = panas_data)
+resid1 <- augment(panas1_fit)
   
+resid1_2 <- resid1 %>%
+  dplyr::select(.std.resid) %>%
+  rename(panas1_res = .std.resid)
+
+# calculate negative residual change
+panas2_fit <- lm(panas2_2 ~ panas2_1, data = panas_data)
+resid2 <- augment(panas2_fit)
+  
+resid2_2 <- resid2 %>%
+  dplyr::select(.std.resid) %>%
+  rename(panas2_res = .std.resid)
+
+#create a data file with residuals added 
+panas_processed <- panas_data %>% bind_cols(resid1_2, resid2_2)
+```
+
+a) Mean and Standard Deviations by Group for PANAS Pre and Post
+```{r mean-sd-panas}
+panas_data %>%
+  group_by(group) %>%
+  summarise(pos_pre_mean = mean(panas1_1),
+            pos_post_mean = mean(panas1_2),
+            neg_pre_mean = mean(panas2_1),
+            neg_post_mean = mean(panas2_2),
+            pos_pre_sd = sd(panas1_1),
+            pos_pos_sd = sd(panas1_2),
+            neg_pre_sd = sd(panas2_1),
+            neg_post_sd = sd(panas2_2)) %>%
+  knitr::kable()
+```
+
+b) Minimum and Maxiumum by Group for PANAS Pre and Post
+```{r, min-max-panas}
+panas_data %>%
+  group_by(group) %>%
+  summarise(pos_pre_min = min(panas1_1),
+            pos_pos_min = min(panas1_2),
+            neg_pre_min = min(panas2_1),
+            neg_post_min = min(panas2_2),
+            pos_pre_max = max(panas1_1),
+            pos_pos_max = max(panas1_2),
+            neg_pre_max = max(panas2_1),
+            neg_post_max = max(panas2_2)) %>%
+  knitr::kable()
+```
+
+
+## 2. Boxplot for H4
+```{r fig4-h4-boxplot}
+panas_data %>% 
+  gather(panas_negative, score, panas2_1, panas2_2, -client_number) %>%
+    mutate(panas_negative = factor(panas_negative, labels = c("Pre", "Post"))) %>%
+  ggplot(aes(x=panas_negative, y=score)) +
+  geom_boxplot() +
+  geom_jitter(aes(color=panas_negative), size=2) +
+  facet_wrap(~ group_type) +
+  scale_color_manual(values=c("#12100F", "#60B2FF"), name="Negative Affect") +
+  labs(x="Negative Affect",
+       title = "Figure 4. Change in Negative Affect (PANAS) Prior and After Substance Use") +
+  theme(legend.position = "none")
+```
+
+
+
+
+
+## 3. Independent T-Test for H4
+```{r h4-test}
+t.test(panas_processed$panas2_res ~ panas_processed$group, paired=FALSE)
+```
+
+
+## 4. Supplemental Paired T-tests for H4
+
+a) Overall Difference in Negative Affect between Substance Use and Non-Substance Use Participants
+```{r h4-supplemental-test-1}
+t.test(panas_data$panas2_2, panas_data$panas2_1, paired = TRUE, alternative = "two.sided")
+```
+The difference in negative affect change following substance use was non-significant between substance and non-substance use participants (t(30)=-1.77, p=0.09)
+
+b) Paired t-test for change in negative affect using Substance Use Group Only
+```{r h4-supplemental-test-2}
+su <- panas_data %>%
+  filter(group_type == "Substance Use")
+
+t.test(su$panas2_2, su$panas2_1, paired = TRUE, alternative = "two.sided")
+# substance use people had a significant reduction (again, just change isn't different from nongroup)
+```
+Substance use participants showed a significant decrease in negative following substance use (t(19)=-2.16, p=0.04)
+
+c) Paired t-test for change in negative affect using Non-Substance Use Group Only
+```{r h4-supplemental-test-3}
+nsu <- panas_data %>%
+  filter(group_type == "Non-Substance")
+
+t.test(nsu$panas2_2, nsu$panas2_1, paired = TRUE, alternative = "two.sided")
+# non-substance use people had a non-significant reduction 
+```
+Non-substance use participants did not show a significant decrease in negative following substance use (t(10)=-0.11, p=0.91)
+
+## 5. Assumptions for H4
+a) Shapiro for H4
+```{r h4-shapiro}
+shapiro.test(panas_processed$panas2_res) #ok
+```
+b) Levene's for H4
+```{r h4-levene}
+car::leveneTest(panas_processed$panas2_res, panas_processed$group_type) #ok
+```
+
+
+# Hypothesis 5
+
+Hypothesis 5: Participants not seeking treatment for substance abuse will report greater positive affect following substance use compared to participants seeking treatment for substance abuse.
+
+1. Boxplot for Change in Positive Affect by Treatment Group
+2. Independent t-test for Residual Change in PANAS Positive Affect by Treatment group
+3. Three Supplmental Paired t-tests for difference in PANAS Positive Affect 
+  a) Overall Change in PANAS Positive Affect
+  b) Change in PANAS Positive Affect for Substance-Use Group Only
+  c) Change in PANAS Positive Affect for Non-Substance-Use Group Only
+4. Assumptions for H5
+
+## 1. Boxplot for H5
+```{r fig5-h5-boxplot}
+panas_data %>% 
+  gather(panas_positive, score, panas1_1, panas1_2, -client_number) %>%
+    mutate(panas_positive = factor(panas_positive, labels = c("Pre", "Post"))) %>%
+  ggplot(aes(x=panas_positive, y=score)) +
+  geom_boxplot() +
+  geom_jitter(aes(color=panas_positive), size=2) +
+  facet_wrap(~ group_type) +
+  scale_color_manual(values=c("#12100F", "#60B2FF"), name="Positive Affect") +
+  labs(x="Positive",
+       title = "Figure 5. Change in Positive Affect (PANAS) Prior and After Substance Use") +
+  theme(legend.position = "none")
+```
+
+## 2. Independent T-Test for H5
+```{r h5-test}
+t.test(panas_processed$panas1_res ~ panas_processed$group, paired=FALSE)
+```
+
+## 3. Supplemental Paired T-tests for H5
+
+a) Overall Difference in Positive Affect between Substance Use and Non-Substance Use Participants
+```{r h5-supplemental-test-1}
+t.test(panas_data$panas1_2, panas_data$panas1_1, paired = TRUE, alternative = "two.sided")
+```
+The difference in negative affect change following substance use was non-significant between substance and non-substance use participants (t(30)=-1.02, p=0.32)
+
+b) Paired t-test for change in positive affect using Substance Use Group Only
+```{r h5-supplemental-test-2}
+su <- panas_data %>%
+  filter(group_type == "Substance Use")
+
+t.test(su$panas1_2, su$panas1_1, paired = TRUE, alternative = "two.sided")
+```
+Substance use participants showed a non-significant change in positive following substance use (t(19)=1.03, p=0.32)
+
+c) Paired t-test for change in positive affect using Non-Substance Use Group Only
+```{r h5-supplemental-test-3}
+nsu <- panas_data %>%
+  filter(group_type == "Non-Substance")
+
+t.test(nsu$panas1_2, nsu$panas1_1, paired = TRUE, alternative = "two.sided")
+```
+Non-substance use participants showed a non-significant change in positive affect following substance use (t(10)=-0.33, p=0.75)
+
+## 4. Assumptions for H5
+
+```{r h5-shapiro}
+shapiro.test(panas_processed$panas1_res) #ok
+```
+
+```{r h5-levene}
+car::leveneTest(panas_processed$panas1_res, panas_processed$group_type) #ok
+```
+
+
+# Hypothesis 6 
+
+Three exploratory analyses examined change in relationship and emotions following substance use as they are associated with parental monitoring, peer acceptance, and diagnostic group.  Due to no variability in diagnostic group, questions regarding diagnostic group were dropped.  Three questions examined were as follows:
+
+1. H6-1: Higher levels of parental monitoring would be associated with a decrease in negative affect following substance use.
+  a) Scatterplot of Parental Monitoring and Change in PANAS (Negative and Positive Affect) regardless of treatment group
+  b) H6-1 Pearson Correlation Coefficients
+  c) H6-1 Assumptions
+2. H6-2: Higher levels of peer acceptance would be associated with an increase in positive affect substance use.
+  a) Scatterplot of Peer Support and Change in PANAS (Negative and Positive Affect) regardless of treatment group
+  b) H6-2 Pearson Correlation Coefficients
+  c) H6-2 Assumptions
+3. H6-3: Higher levels of peer acceptance would be associated with an increase in perceived affiliation in the actions of a significant other towards the participant following substance use.
+  a) H6-3 Scatterplot of Peer Support and change in perception of Significant Other acting towards Participant with Affiliation following substance use
+  b) H6-3 Pearson Correlation Coefficient
+
+## 1. H6-1
+```{r h6-wrangling}
+panas_processed$pm_1r <- car::recode(panas_processed$pm_1, "1=4;  2=3;  3=2; 4=1")
+panas_processed$pm_2r <- car::recode(panas_processed$pm_2, "1=4;  2=3;  3=2; 4=1")
+panas_processed$pm_3r <- car::recode(panas_processed$pm_3, "1=4;  2=3;  3=2; 4=1")
+panas_processed$psm_1r <- car::recode(panas_processed$psm_1, "1=4;  2=3;  3=2; 4=1")
+panas_processed$psm_2r <- car::recode(panas_processed$psm_2, "1=4;  2=3;  3=2; 4=1")
+panas_processed$psm_3r <- car::recode(panas_processed$psm_3, "1=4;  2=3;  3=2; 4=1")
+
+h6_data <- panas_processed %>%
+  group_by(client_number) %>%
+  mutate(pmtot = sum(pm_1r + pm_2r + pm_3r),
+         psmtot = sum(psm_1r + psm_2r + psm_3r)) %>%
+  ungroup() %>%
+  dplyr::select(panas2_res, panas1_res, pmtot, psmtot) 
+```
+
+
+a) H6-1 Scatterplot
+```{r h61-box-data}
+h3_box <- coefficents_long %>%
+  filter(surface == "surf_1") %>%
+  dplyr::select(-group) %>%
+  gather(time, value, -group_type,-client_number, -surface) %>%
+  mutate(affiliation = as.numeric(value),
+         time_f = as.factor(time),
+         time_f = factor(time_f, levels = c("pre","post")),
+         sasb_surface = factor(surface, labels = c("int-aff")),
+         sasb_surface = factor(sasb_surface, levels = c("int-aff"))) %>%
+  dplyr::select(client_number, sasb_surface, time_f, group_type, affiliation, -value, -time)
+```
+
+```{r h61-boxplot}
+h6_data %>%
+  gather(panas_type, panas_value, -pmtot, -psmtot) %>%
+  mutate(panas_f = factor(panas_type, labels = c("Positive", "Negative"))) %>%
+  ggplot(aes(panas_value, pmtot, color = panas_f)) +
+  geom_point() +
+  stat_smooth(method = "lm") +
+  guides(color=guide_legend(title="PANAS Type")) +
+  labs(x = "Residual Change in PANAS",
+       y = "Parental Monitoring Total",
+       title = "Figure 6. Scatter plot of parental monitor \n by change in positive and negative PANAS",
+       caption = "") +
+  scale_color_manual(values=c("#AAAAAA", "#60B2FF")) +
+  theme(plot.caption = element_text(hjust = 0))
+```
+
+b) H6-1 Pearson Correlation Coefficients
+```{r h61-correlations}
+cor.test(h6_data$panas2_res, h6_data$pmtot) # negative correlation - basically 0.0 - ns
+cor.test(h6_data$panas1_res, h6_data$pmtot) # this was extra  just for the comparison.
+```
+
+C) H6-1 Assumptions
+```{r h61-shapiro}
+shapiro.test(h6_data$pmtot)
+```
+
+```{r h61-histogram}
+hist(h6_data$pmtot)
+```
+
+## H6-2 
+
+a) H6-2 Scatterplot
+```{r h62-scatterplot}
+h6_data %>%
+  gather(panas_type, panas_value, -pmtot, -psmtot) %>%
+  mutate(panas_f = factor(panas_type, labels = c("Positive", "Negative"))) %>%
+  ggplot(aes(panas_value, psmtot, color = panas_f)) +
+  geom_point() +
+  stat_smooth(method = "lm") +
+  guides(color=guide_legend(title="PANAS Type")) +
+  labs(x = "Residual Change in PANAS",
+       y = "Peer Support Total",
+       title = "Figure 7. Scatter plot of peer support \nby change in positive and negative PANAS",
+       caption = "") +
+  scale_color_manual(values=c("#AAAAAA", "#60B2FF")) +
+  theme(plot.caption = element_text(hjust = 0))
+```
+
+b) H6-2 Pearson Correlation Coefficients
+```{r h62-correlations}
+cor.test(h6_data$panas2_res, h6_data$psmtot)
+cor.test(h6_data$panas1_res, h6_data$psmtot) # positive correlation but not significant
+```
+
+C) H6-2 Assumptions
+```{r h62-shapiro}
+shapiro.test(h6_data$psmtot)
+```
+
+```{r h62-histogram}
+hist(h6_data$psmtot)
+```
+
+
+## H6-3
+```{r h63-wrangling}
+h63_data <- h6_data %>%
+  dplyr::select(pmtot, psmtot) %>%
+  bind_cols(sasb_residuals)
+```
+
+a) H6-3 Scatterplot
+```{r h63-scatterplot}
+h63_data %>%
+  ggplot(aes(surf_5, psmtot)) +
+  geom_point() +
+  stat_smooth(method = "lm") +
+  labs(x = "Residual Change in SOST AFF",
+       y = "Peer Support Total",
+       title = "Figure 8. Scatter plot of peer support \nby change in SOST AFF",
+       caption = "Note. SOST = Significant Other to Subject - Affiliation") +
+  scale_color_manual(values=c("#AAAAAA", "#60B2FF")) +
+  theme(plot.caption = element_text(hjust = 0))
+```
+
+b) H6-3 Pearson Correlation Coefficient
+```{r}
+cor.test(h63_data$surf_5, h63_data$psmtot) # n.s 
+```
+
+
+
+
+
+```{r everyting after here is scratch, include=FALSE, echo=FALSE}
+knitr::knit_exit()
+```
+
+
+```{r h4-visualization}
+panas_processed %>%
+  gather(time, panas_score, panas1_1, panas1_2, -client_number) %>%
+  ggplot(aes(x=time, y=panas_score, color=group)) +
+  #geom_jitter(aes(color=group)) +
+  stat_summary(fun.y = mean, geom = "point", aes(group=group), position = position_dodge(width=.90)) + 
+  #stat_summary(fun.y = mean, geom = "line", aes(group= group), position = position_dodge(width=.90)) + 
+  stat_summary(fun.data = mean_cl_boot, geom = "errorbar", width = 0.2, aes(group=group), position = position_dodge(width=.90)) +
+  scale_color_manual(values=c("#12100F", "#60B2FF"))
+```
+
+
+```{r, echo=FALSE, include=FALSE}
+knit_exit()
+```
+
+## Extra Code
+
+### H1 Not Included
+```{r interpersonal surface tests, echo=FALSE, include=FALSE}
+# Paired T-test for pre and post difference scores in affiliation for all surfaces and all groups - not comparing groups - and for interpersonal surfaces. Not included.
+
+coefficents_long %>%
+  filter(surface == "surf_3" | surface == "surf_5" | surface == "surf_7" | surface == "surf_9") %>%
+  group_by(surface, group) %>%
+  do(tidy(t.test(.$pre, .$post, paired=TRUE)))  
+```
+
+
+```{r simple paired t-tests, include=FALSE, echo=FALSE, eval=FALSE}
+# Not included. 
+# Surface 3
+coefficients %>%
+  group_by(group) %>%
+  summarize(statistic = t.test(unlist(surf_3_1), unlist(surf_3_2), paired = TRUE)$statistic,
+            p_value = t.test(unlist(surf_3_1), unlist(surf_3_2), paired = TRUE)$p.value)
+# Surface 5 
+coefficients %>%
+  group_by(group) %>%
+  summarize(statistic = t.test(unlist(surf_5_1), unlist(surf_5_2), paired = TRUE)$statistic,
+            p_value = t.test(unlist(surf_5_1), unlist(surf_5_2), paired = TRUE)$p.value)
+
+# Surface 7
+coefficients %>%
+  group_by(group) %>%
+  summarize(statistic = t.test(unlist(surf_7_1), unlist(surf_7_2), paired = TRUE)$statistic,
+            p_value = t.test(unlist(surf_7_1), unlist(surf_7_2), paired = TRUE)$p.value)
+
+# Surface 9
+coefficients %>%
+  group_by(group) %>%
+  summarize(statistic = t.test(unlist(surf_9_1), unlist(surf_9_2), paired = TRUE)$statistic,
+            p_value = t.test(unlist(surf_9_1), unlist(surf_9_2), paired = TRUE)$p.value)
+```
+
+
 ```{r graph h1 t-tests, echo=FALSE, eval=FALSE, include=FALSE}  
 # not included
   h1_final %>%
@@ -530,148 +1082,15 @@ h1_t_tests %>%
 ##############################################################################
 ```
 
-## 4. Assumptions for H1
 
-```{r h1 assumption, echo=FALSE, warning=FALSE}
-shapiro.test(sasb_residuals$surf_3)
-shapiro.test(sasb_residuals$surf_5)
-shapiro.test(sasb_residuals$surf_7)
-shapiro.test(sasb_residuals$surf_9)
-
-
-#Levene's test for comparison of variances of exam scores in the two universities.
-car::leveneTest(sasb_residuals$surf_3, sasb_residuals$group)
-car::leveneTest(sasb_residuals$surf_5, sasb_residuals$group)
-car::leveneTest(sasb_residuals$surf_7, sasb_residuals$group)
-car::leveneTest(sasb_residuals$surf_9, sasb_residuals$group)
-```
-
-
-
-# Hypothesis 2
-
-H2: Adolescents who reported depressants (alcohol, marijuana, narcotics) as their drug of choice will rate their significant others as more sulking and resentful prior to using compared to adolescents who do not report depressants as their drug of choice. 
-
-```{r make h2data, echo=FALSE, include=FALSE}
-h2_data <- kayla_processed %>%
-  dplyr::select(sosicl6p, sosicl6a, doc1) %>%
-    mutate(doc_f = if_else(doc1 %in% 1:4, "depressant", "stimulant")) %>%
-  dplyr::select(-doc1)
-```
-
-```{r h2box data, echo=FALSE, include=FALSE}
-h2_box <- h2_data %>%
-  gather(time, value, -doc_f) %>%
-  mutate(time_f = as.factor(time),
-         time_f = factor(time_f, labels = c("post","pre")),
-         time_f = factor(time_f, levels = c("pre","post")),)
-```
-
-## 1. Boxplot for Hypothesis 3
-```{r FIG2 h2box, echo=FALSE}
-h2_box %>%
-  ggplot(aes(time_f, value)) +
-  geom_boxplot(aes(color=doc_f)) +
-  #geom_point(aes(color=group_type))+
-  #facet_wrap(~sasb_surface) + 
-  guides(color=guide_legend(title="Group")) +
-  labs(x = "Time",
-       y = "Sulk and Scurry",
-       title = "Figure 2. Boxplots of SASB Cluster 6 Significant Other Sulks and Scurrys \nand Drug Type Pre and Post Substance Use",
-       caption = "") +
-  scale_color_manual(values=c("#AAAAAA", "#60B2FF")) +
-  theme(plot.caption = element_text(hjust = 0)) +
-  geom_jitter()
-```
-
-## 2. T-test for H3
-```{r h2-test, echo=FALSE}
-h2_data_na <- h2_data %>% 
-  filter(!is.na(sosicl6p)) %>%
-  mutate(doc_fa = as.factor((doc_f)),
-         num_6 = as.integer(sosicl6p))
-
-
-#t.test(h2_data_na$sosicl6p ~ h2_data_na$doc_fa) # pre
-
-# data was not normally distributed.
-wilcox.test(h2_data_na$sosicl6p ~ h2_data_na$doc_fa)
-
-#t.test(h2_data_na$sosicl6a ~ h2_data_na$doc_fa) # after
-
-
-####non-parametric for imbalanced data
-#wilcox.test(h2_data_na$sosicl6a ~ h2_data_na$doc_fa)
-#wilcox.test(h2_data_na$sosicl6p ~ h2_data_na$doc_fa)
-```
-
-## 3. Means and SD for H3
-```{r, echo=FALSE}
-h2_data_na %>%
-  group_by(doc_fa) %>%
-  summarize(mean = mean(sosicl6p),
-            sd = sd(sosicl6p))
-
-```
-
-## 4. Assumptions for h4
-```{r h2 assumption, echo=FALSE}
-shapiro.test(h2_data_na$sosicl6p) # violate so we'll use non-parametric
-hist(h2_data_na$sosicl6p)
-
-#h2a <- h2_data_na %>% 
-#  mutate(log = sqrt(sosicl6p))# %>%
-  #ggplot(aes(log)) +
-  #geom_histogram()
-
-
-#Levene's test for comparison of variances of exam scores in the two universities.
-car::leveneTest(h2_data_na$sosicl6p, h2_data_na$doc_fa) #ok
-```
-
-# Hypothesis 3 
-
-H3: Participants seeking treatment for substance abuse will report greater hoped-for introject (self-concept) affiliation following use of their substance of choice compared to participants not seeking treatment for substance abuse.
-
-Analyses are almost identical to H1 but with the introject affiliation surface, surface 1. The analyses include the following:
-1. Visualize introject affiliation differences between groups at their reported 'best' and at their reported 'worst'. Boxplots.
-2. Test differences in introject affiliation in both groups using paired t-tests.
-3. Calculate residual change scores for introject (worst predicted by best) and compare differences in residuals by group (substance or no-substance).
-
-## 1. Boxplot for Affiliation in Introject (H3)
-```{r, echo=FALSE}
-h3_box <- coefficents_long %>%
-  filter(surface == "surf_1") %>%
-  dplyr::select(-group) %>%
-  gather(time, value, -group_type,-client_number, -surface) %>%
-  mutate(affiliation = as.numeric(value),
-         time_f = as.factor(time),
-         time_f = factor(time_f, levels = c("pre","post")),
-         sasb_surface = factor(surface, labels = c("int-aff")),
-         sasb_surface = factor(sasb_surface, levels = c("int-aff"))) %>%
-  dplyr::select(client_number, sasb_surface, time_f, group_type, affiliation, -value, -time)
-```
-
-```{r FIG3 boxh3, echo=FALSE}
-h3_box %>%
-  ggplot(aes(time_f, affiliation)) +
-  geom_boxplot(aes(color=group_type)) +
-  #geom_point(aes(color=group_type))+
-  #facet_wrap(~sasb_surface) + 
-  guides(color=guide_legend(title="Group")) +
-  labs(x = "Time",
-       y = "SASB Affiliation",
-       title = "Figure 3. Boxplots of SASB Affiliation by Interpersonal Surfaces \nand Group Pre and Post Substance Use",
-       caption = "Note. SOST = Significant Other to Subject Transitive; SOSI = Significant Other to Subject Intransitive; \nSSOT = Subject to Significant Other Transitive; SSOI = Subject to Significant Other Intransitive") +
-  scale_color_manual(values=c("#AAAAAA", "#60B2FF")) +
-  theme(plot.caption = element_text(hjust = 0))
-```
-
-
-
+### H2 Not Included 
 ```{r introject surface tests, echo=FALSE, eval=FALSE, include=FALSE}
+# H2
+
 ## 2. Paired Sample T-tests for Difference Scores (H3)
 #Paired T-test for pre and post difference scores in affiliation for all surfaces and all groups - not comparing groups - and for interpersonal surfaces.
+
+# extra - we do not use
 coefficents_long %>%
   filter(surface == "surf_1") %>%
   group_by(surface, group) %>%
@@ -679,19 +1098,8 @@ coefficents_long %>%
 ```
 
 
+### H3 Not Included
 
-## 2. Group Differences using Independent T-Tests (H3)
-```{r t for h3, echo=FALSE}
-
-h3_final <- h1_t_tests %>%
-  unnest(tidied) %>%
-  dplyr::select(surface, statistic, p.value, conf.low, conf.high) %>%
-  filter(surface == "surf_1") %>%
-  mutate(surface = factor(surface, levels = c("surf_1")),
-         sasb_surface = factor(surface, labels = c("int-aff")),
-         sasb_surface = factor(sasb_surface, levels = c("int-aff")))
-```  
-  
 ```{r graph h3 t-tests, echo=FALSE, include=FALSE, eval=FALSE}  
   h3_final %>%
   ggplot(aes(statistic, sasb_surface)) +
@@ -709,75 +1117,8 @@ h3_final <- h1_t_tests %>%
   theme(plot.caption = element_text(hjust = 0))
 ```
 
-## 3. H3 Assumptions
-```{r h3 assumption, echo=FALSE}
-shapiro.test(sasb_residuals$surf_1) #ok
-car::leveneTest(sasb_residuals$surf_1, sasb_residuals$group) #ok
-```
 
-
-# Hypothesis 4
-
-H4: Participants seeking treatment for substance abuse will report less negative affect following use of their substance of choice compared to participants not seeking treatment for substance abuse.
-
-```{r Process PANAS Data, echo=FALSE}
-# 1. Make a smaller version of data focused on PANAS
-panas_data <- kayla_processed %>% dplyr::select(client_number, group, panas1_1, panas1_2, panas2_1, panas2_2, pm_1, pm_2, pm_3, psm_1, psm_2, psm_3)  %>%
-  mutate(group_type = factor(group, labels = c("Non-Substance", "Substance Use")))#,
-         #group_type = factor(group_type, levels = c("Substance", "Non-Substance")))
-
-# 2. calculate positive residual change
-panas1_fit <- lm(panas1_2 ~ panas1_1, data = panas_data)
-resid1 <- augment(panas1_fit)
-  
-resid1_2 <- resid1 %>%
-  dplyr::select(.std.resid) %>%
-  rename(panas1_res = .std.resid)
-
-# calculate negative residual change
-panas2_fit <- lm(panas2_2 ~ panas2_1, data = panas_data)
-resid2 <- augment(panas2_fit)
-  
-resid2_2 <- resid2 %>%
-  dplyr::select(.std.resid) %>%
-  rename(panas2_res = .std.resid)
-
-#create a data file with residuals added 
-panas_processed <- panas_data %>% bind_cols(resid1_2, resid2_2)
-```
-
-## 1. Summary Statistics for H4
-
-Mean and Standard Deviations by Group for PANAS Pre and Post
-```{r, echo=FALSE}
-panas_data %>%
-  group_by(group) %>%
-  summarise(pos_pre_mean = mean(panas1_1),
-            pos_post_mean = mean(panas1_2),
-            neg_pre_mean = mean(panas2_1),
-            neg_post_mean = mean(panas2_2),
-            pos_pre_sd = sd(panas1_1),
-            pos_pos_sd = sd(panas1_2),
-            neg_pre_sd = sd(panas2_1),
-            neg_post_sd = sd(panas2_2)) %>%
-  knitr::kable()
-```
-
-Minimum and Maxiumum by Group for PANAS Pre and Post
-```{r, echo=FALSE}
-panas_data %>%
-  group_by(group) %>%
-  summarise(pos_pre_min = min(panas1_1),
-            pos_pos_min = min(panas1_2),
-            neg_pre_min = min(panas2_1),
-            neg_post_min = min(panas2_2),
-            pos_pre_max = max(panas1_1),
-            pos_pos_max = max(panas1_2),
-            neg_pre_max = max(panas2_1),
-            neg_post_max = max(panas2_2)) %>%
-  knitr::kable()
-```
-
+### H4 Not Included
 
 ```{r, eval=FALSE, include=FALSE}
 #Empirical Cumulative Distribution Function for Positive
@@ -808,9 +1149,6 @@ panas_data %>%
 ```
 
 
-
-
-
 ```{r, echo=FALSE, include=FALSE, eval=FALSE}
 panas_data %>% 
   gather(panas_negative, score, panas2_1, panas2_2, -client_number) %>%
@@ -820,61 +1158,7 @@ panas_data %>%
   theme(legend.position = "none")
 ```
 
-## 2. Boxplot for PANAS Negative Affect Change by Group
-```{r fig4, echo=FALSE}
-panas_data %>% 
-  gather(panas_negative, score, panas2_1, panas2_2, -client_number) %>%
-    mutate(panas_negative = factor(panas_negative, labels = c("Pre", "Post"))) %>%
-  ggplot(aes(x=panas_negative, y=score)) +
-  geom_boxplot() +
-  geom_jitter(aes(color=panas_negative), size=2) +
-  facet_wrap(~ group_type) +
-  scale_color_manual(values=c("#12100F", "#60B2FF"), name="Negative Affect") +
-  labs(x="Negative Affect",
-       title = "Figure 4. Change in Negative Affect (PANAS) Prior and After Substance Use") +
-  theme(legend.position = "none")
-```
-
-
-
-## 3. T-Test for H4
-```{r overall difference in negative affect, echo=FALSE}
-t.test(panas_data$panas2_2, panas_data$panas2_1, paired = TRUE, alternative = "two.sided")
-```
-The difference in negative affect change following substance use was non-significant between substance and non-substance use participants (t(30)=-1.77, p=0.09)
-
-T-test for H4 Using Substance Use Group Only
-```{r substance use people only, echo=FALSE}
-su <- panas_data %>%
-  filter(group_type == "Substance Use")
-
-t.test(su$panas2_2, su$panas2_1, paired = TRUE, alternative = "two.sided")
-# substance use people had a significant reduction (again, just change isn't differen from nongroup)
-```
-Substance use participants showed a significant decrease in negative following substance use (t(19)=-2.16, p=0.04)
-
-T-test for H4 Using Non-Substance Use Group Only
-```{r non-substance use people only, echo=FALSE}
-nsu <- panas_data %>%
-  filter(group_type == "Non-Substance")
-
-t.test(nsu$panas2_2, nsu$panas2_1, paired = TRUE, alternative = "two.sided")
-# non-substance use people had a non-significant reduction 
-```
-Non-substance use participants did not show a significant decrease in negative following substance use (t(10)=-0.11, p=0.91)
-
-## 4. Assumptions for H4
-```{r h4 assumption, echo=FALSE}
-shapiro.test(panas_processed$panas2_res) #ok
-car::leveneTest(panas_processed$panas2_res, panas_processed$group_type) #ok
-```
-
-
-
-# Hypothesis 5
-
-Hypothesis 5: Participants not seeking treatment for substance abuse will report greater positive affect following substance use compared to participants seeking treatment for substance abuse.
-
+### H5 Not Included
 
 ```{r, echo=FALSE, include=FALSE, eval=FALSE}
 panas_data %>% 
@@ -884,197 +1168,3 @@ panas_data %>%
   geom_jitter(aes(color=panas_positive)) +
   theme(legend.position = "none")
 ```
-
-## 1. Boxplot for PANAS Positive Affect Change by Group
-```{r FIG5, echo=FALSE}
-panas_data %>% 
-  gather(panas_positive, score, panas1_1, panas1_2, -client_number) %>%
-    mutate(panas_positive = factor(panas_positive, labels = c("Pre", "Post"))) %>%
-  ggplot(aes(x=panas_positive, y=score)) +
-  geom_boxplot() +
-  geom_jitter(aes(color=panas_positive), size=2) +
-  facet_wrap(~ group_type) +
-  scale_color_manual(values=c("#12100F", "#60B2FF"), name="Positive Affect") +
-  labs(x="Positive",
-       title = "Figure 5. Change in Positive Affect (PANAS) Prior and After Substance Use") +
-  theme(legend.position = "none")
-```
-
-
-
-
-```{r overall difference in positive affect, echo=FALSE}
-t.test(panas_data$panas1_2, panas_data$panas1_1, paired = TRUE, alternative = "two.sided")
-```
-The difference in negative affect change following substance use was non-significant between substance and non-substance use participants (t(30)=-1.02, p=0.32)
-
-
-```{r substance use people only positive, echo=FALSE}
-su <- panas_data %>%
-  filter(group_type == "Substance Use")
-
-t.test(su$panas1_2, su$panas1_1, paired = TRUE, alternative = "two.sided")
-```
-Substance use participants showed a significant decrease in negative following substance use (t(19)=1.03, p=0.32)
-
-```{r non-substance use people only positive, echo=FALSE}
-nsu <- panas_data %>%
-  filter(group_type == "Non-Substance")
-
-t.test(nsu$panas1_2, nsu$panas1_1, paired = TRUE, alternative = "two.sided")
-```
-Non-substance use participants did not show a significant decrease in negative following substance use (t(10)=-0.33, p=0.75)
-
-
-```{r h5 assumption}
-shapiro.test(panas_processed$panas1_res) #ok
-car::leveneTest(panas_processed$panas1_res, panas_processed$group_type) #ok
-```
-
-
-
-
-## Hypothesis 6: Exploratory analyses will examine change in relationship and emotions associated with parental monitoring, peer acceptance, and diagnostic group.
-
-### H61: The more parental monitoring the more decrease of negative affect following substance use
-```{r h6-wrangling}
-panas_processed$pm_1r <- car::recode(panas_processed$pm_1, "1=4;  2=3;  3=2; 4=1")
-panas_processed$pm_2r <- car::recode(panas_processed$pm_2, "1=4;  2=3;  3=2; 4=1")
-panas_processed$pm_3r <- car::recode(panas_processed$pm_3, "1=4;  2=3;  3=2; 4=1")
-panas_processed$psm_1r <- car::recode(panas_processed$psm_1, "1=4;  2=3;  3=2; 4=1")
-panas_processed$psm_2r <- car::recode(panas_processed$psm_2, "1=4;  2=3;  3=2; 4=1")
-panas_processed$psm_3r <- car::recode(panas_processed$psm_3, "1=4;  2=3;  3=2; 4=1")
-
-h6_data <- panas_processed %>%
-  group_by(client_number) %>%
-  mutate(pmtot = sum(pm_1r + pm_2r + pm_3r),
-         psmtot = sum(psm_1r + psm_2r + psm_3r)) %>%
-  ungroup() %>%
-  dplyr::select(panas2_res, panas1_res, pmtot, psmtot) 
-```
-
-```{r h61 box data, echo=FALSE, include=FALSE}
-h3_box <- coefficents_long %>%
-  filter(surface == "surf_1") %>%
-  dplyr::select(-group) %>%
-  gather(time, value, -group_type,-client_number, -surface) %>%
-  mutate(affiliation = as.numeric(value),
-         time_f = as.factor(time),
-         time_f = factor(time_f, levels = c("pre","post")),
-         sasb_surface = factor(surface, labels = c("int-aff")),
-         sasb_surface = factor(sasb_surface, levels = c("int-aff"))) %>%
-  dplyr::select(client_number, sasb_surface, time_f, group_type, affiliation, -value, -time)
-```
-
-```{r, echo=FALSE}
-h6_data %>%
-  gather(panas_type, panas_value, -pmtot, -psmtot) %>%
-  mutate(panas_f = factor(panas_type, labels = c("Positive", "Negative"))) %>%
-  ggplot(aes(panas_value, pmtot, color = panas_f)) +
-  geom_point() +
-  stat_smooth(method = "lm") +
-  guides(color=guide_legend(title="PANAS Type")) +
-  labs(x = "Residual Change in PANAS",
-       y = "Parental Monitoring Total",
-       title = "Figure #. Scatter plot of parental monitor \n by change in positive and negative PANAS",
-       caption = "") +
-  scale_color_manual(values=c("#AAAAAA", "#60B2FF")) +
-  theme(plot.caption = element_text(hjust = 0))
-```
-
-```{r h61 correlations}
-cor.test(h6_data$panas2_res, h6_data$pmtot) # negative correlation - basically 0.0 - ns
-cor.test(h6_data$panas1_res, h6_data$pmtot) # this was extra  just for the comparison.
-```
-
-```{r h61 assumptions}
-shapiro.test(h6_data$pmtot) #
-hist(h6_data$pmtot)
-```
-
-
-
-### H62: The more peer acceptance the greater increase in positive affect substance use
-```{r acceptance graph}
-h6_data %>%
-  gather(panas_type, panas_value, -pmtot, -psmtot) %>%
-  mutate(panas_f = factor(panas_type, labels = c("Positive", "Negative"))) %>%
-  ggplot(aes(panas_value, psmtot, color = panas_f)) +
-  geom_point() +
-  stat_smooth(method = "lm") +
-  guides(color=guide_legend(title="PANAS Type")) +
-  labs(x = "Residual Change in PANAS",
-       y = "Peer Support Total",
-       title = "Figure #. Scatter plot of peer support \nby change in positive and negative PANAS",
-       caption = "") +
-  scale_color_manual(values=c("#AAAAAA", "#60B2FF")) +
-  theme(plot.caption = element_text(hjust = 0))
-```
-
-```{r h62 correlations}
-cor.test(h6_data$panas2_res, h6_data$psmtot)
-cor.test(h6_data$panas1_res, h6_data$psmtot) # positive correlation but not significant
-```
-
-```{r h62 assumptions}
-shapiro.test(h6_data$psmtot) #
-hist(h6_data$psmtot)
-```
-
-
-### H63: The more peer acceptance the more affiliative a significant other is seen acting toward the participant following substance use. 
-```{r acceptance-affiliation}
-h63_data <- h6_data %>%
-  dplyr::select(pmtot, psmtot) %>%
-  bind_cols(sasb_residuals)
-```
-
-
-```{r h6-3 figure}
-h63_data %>%
-  ggplot(aes(surf_5, psmtot)) +
-  geom_point() +
-  stat_smooth(method = "lm") +
-  labs(x = "Residual Change in SOST AFF",
-       y = "Peer Support Total",
-       title = "Figure #. Scatter plot of peer support \nby change in SOST AFF",
-       caption = "Note. SOST = Significant Other to Subject - Affiliation") +
-  scale_color_manual(values=c("#AAAAAA", "#60B2FF")) +
-  theme(plot.caption = element_text(hjust = 0))
-```
-
-```{r}
-cor.test(h63_data$surf_5, h63_data$psmtot) # n.s 
-```
-
-```{r h63 assumption}
-# already tested above
-```
-
-
-```{r everyting after here is scratch, include=FALSE, echo=FALSE}
-knitr::knit_exit()
-```
-
-
-```{r h4-visualization}
-panas_processed %>%
-  gather(time, panas_score, panas1_1, panas1_2, -client_number) %>%
-  ggplot(aes(x=time, y=panas_score, color=group)) +
-  #geom_jitter(aes(color=group)) +
-  stat_summary(fun.y = mean, geom = "point", aes(group=group), position = position_dodge(width=.90)) + 
-  #stat_summary(fun.y = mean, geom = "line", aes(group= group), position = position_dodge(width=.90)) + 
-  stat_summary(fun.data = mean_cl_boot, geom = "errorbar", width = 0.2, aes(group=group), position = position_dodge(width=.90)) +
-  scale_color_manual(values=c("#12100F", "#60B2FF"))
-```
-
-
-
-
-
-
-
-
-
-
-
