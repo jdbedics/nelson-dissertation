@@ -3,17 +3,17 @@ title: "Data Analysis for Kayla Nelson's Doctoral Dissertation"
 author: "Kayla Nelson"
 date: "`r format(Sys.time(), '%d %B, %Y')`"
 output:
-  word_document:
-    toc: yes
   pdf_document:
     toc: yes
   html_document:
     toc: yes
     toc_float: yes
+  word_document:
+    toc: yes
 ---
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = FALSE, warning = FALSE, message = FALSE)
+knitr::opts_chunk$set(echo = FALSE, warning = FALSE, message = FALSE, fig.width = 5, fig.height = 5)
 #knitr::opts_knit$set(root.dir=normalizePath('../'))
 ```
 
@@ -29,6 +29,7 @@ library(tidyr)
 library(fmsb) # contains ChronbachAlpha 
 library(arm)
 library(knitr)
+library(kableExtra)
 theme_set(theme_light())
 ```
 
@@ -360,7 +361,7 @@ CronbachAlpha(panasnegafter.df) # .87
 ```
 
 
-# Overall Descriptive Statistics
+# Descriptive Statistics for SASB Surfaces
 
 ```{r descriptive stats}
 coefficents_long %>%
@@ -373,10 +374,13 @@ coefficents_long %>%
             pre_max = max(pre, na.rm=TRUE),
             post_min = min(post, na.rm=TRUE),
             post_max = max(post, na.rm=TRUE)) %>%
-  kable()
+  kable() %>%
+  kable_styling(latex_options="scale_down")
 ```
 
 Key: surf_1	= INTAFF; surf_2	= INTAUT; surf_3 = SOSTAFF; surf_4 = SOSTAUT; surf_5 = SOSIAFF; surf_6 = SOSIAUT; surf_7 = SSOTAFF; surf_8 = SSOTAUT; surf_9 = SSOIAFF; surf_10 = SSOIAUT.
+
+\break
 
 # Hypothesis 1
 
@@ -490,6 +494,9 @@ car::leveneTest(sasb_residuals$surf_9, sasb_residuals$group)
 
 
 
+
+\break
+
 # Hypothesis 2
 
 H2: Adolescents who reported depressantsas their drug of choice will rate their significant others as more sulking and resentful prior to using compared to adolescents who do not report depressants as their drug of choice. 
@@ -573,6 +580,9 @@ car::leveneTest(h2_data_na$sosicl6p, h2_data_na$doc_fa) #ok
 
 
 
+
+\break
+
 # Hypothesis 3 
 
 H3: Participants seeking treatment for substance abuse will report greater hoped-for introject (self-concept) affiliation following use of their substance of choice compared to participants not seeking treatment for substance abuse.
@@ -642,6 +652,9 @@ car::leveneTest(sasb_residuals$surf_1, sasb_residuals$group) #ok
 ```
 
 
+
+\break
+
 # Hypothesis 4
 
 H4: Participants seeking treatment for substance abuse will report less negative affect following use of their substance of choice compared to participants not seeking treatment for substance abuse.
@@ -696,7 +709,8 @@ panas_data %>%
             pos_pos_sd = sd(panas1_2),
             neg_pre_sd = sd(panas2_1),
             neg_post_sd = sd(panas2_2)) %>%
-  knitr::kable()
+  knitr::kable() %>%
+  kable_styling(latex_options="scale_down")
 ```
 
 b) Minimum and Maxiumum by Group for PANAS Pre and Post
@@ -711,7 +725,8 @@ panas_data %>%
             pos_pos_max = max(panas1_2),
             neg_pre_max = max(panas2_1),
             neg_post_max = max(panas2_2)) %>%
-  knitr::kable()
+  knitr::kable() %>%
+  kable_styling(latex_options="scale_down")
 ```
 
 
@@ -756,7 +771,7 @@ su <- panas_data %>%
 t.test(su$panas2_2, su$panas2_1, paired = TRUE, alternative = "two.sided")
 # substance use people had a significant reduction (again, just change isn't different from nongroup)
 ```
-Substance use participants showed a significant decrease in negative following substance use (t(19)=-2.16, p=0.04)
+Substance use participants showed a significant decrease in negative affect following substance use (t(19)=-2.16, p=0.04)
 
 c) Paired t-test for change in negative affect using Non-Substance Use Group Only
 ```{r h4-supplemental-test-3}
@@ -766,7 +781,7 @@ nsu <- panas_data %>%
 t.test(nsu$panas2_2, nsu$panas2_1, paired = TRUE, alternative = "two.sided")
 # non-substance use people had a non-significant reduction 
 ```
-Non-substance use participants did not show a significant decrease in negative following substance use (t(10)=-0.11, p=0.91)
+Non-substance use participants did not show a significant decrease in negative affect following substance use (t(10)=-0.11, p=0.91)
 
 ## 5. Assumptions for H4
 a) Shapiro for H4
@@ -778,6 +793,9 @@ b) Levene's for H4
 car::leveneTest(panas_processed$panas2_res, panas_processed$group_type) #ok
 ```
 
+
+
+\break
 
 # Hypothesis 5
 
@@ -817,7 +835,7 @@ a) Overall Difference in Positive Affect between Substance Use and Non-Substance
 ```{r h5-supplemental-test-1}
 t.test(panas_data$panas1_2, panas_data$panas1_1, paired = TRUE, alternative = "two.sided")
 ```
-The difference in negative affect change following substance use was non-significant between substance and non-substance use participants (t(30)=-1.02, p=0.32)
+The difference in positive affect change following substance use was non-significant between substance and non-substance use participants (t(30)=-1.02, p=0.32)
 
 b) Paired t-test for change in positive affect using Substance Use Group Only
 ```{r h5-supplemental-test-2}
@@ -826,7 +844,7 @@ su <- panas_data %>%
 
 t.test(su$panas1_2, su$panas1_1, paired = TRUE, alternative = "two.sided")
 ```
-Substance use participants showed a non-significant change in positive following substance use (t(19)=1.03, p=0.32)
+Substance use participants showed a non-significant change in positive affect following substance use (t(19)=1.03, p=0.32)
 
 c) Paired t-test for change in positive affect using Non-Substance Use Group Only
 ```{r h5-supplemental-test-3}
@@ -847,6 +865,9 @@ shapiro.test(panas_processed$panas1_res) #ok
 car::leveneTest(panas_processed$panas1_res, panas_processed$group_type) #ok
 ```
 
+
+
+\break
 
 # Hypothesis 6 
 
@@ -927,7 +948,7 @@ shapiro.test(h6_data$pmtot)
 hist(h6_data$pmtot)
 ```
 
-## H6-2 
+## 2. H6-2 
 
 a) H6-2 Scatterplot
 ```{r h62-scatterplot}
@@ -962,7 +983,7 @@ hist(h6_data$psmtot)
 ```
 
 
-## H6-3
+## 3. H6-3
 ```{r h63-wrangling}
 h63_data <- h6_data %>%
   dplyr::select(pmtot, psmtot) %>%
