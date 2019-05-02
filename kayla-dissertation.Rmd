@@ -3,11 +3,11 @@ title: "Data Analysis for Kayla Nelson's Doctoral Dissertation"
 author: "Kayla Nelson"
 date: "`r format(Sys.time(), '%d %B, %Y')`"
 output:
+  word_document:
+    toc: yes
   html_document:
     toc: yes
     toc_float: yes
-  word_document:
-    toc: yes
   pdf_document:
     toc: yes
 ---
@@ -340,7 +340,7 @@ kayla_processed$panas2_2 <- kayla_processed$panas_a2+  kayla_processed$panas_a4+
 ```
 
 
-```{r Reliability, include=FALSE, eval=FALSE}
+```{r PANAS Reliability, include=FALSE, eval=FALSE}
 # Positive Affect Score - Prior
 panaspospre.df <- kayla_processed[ , c("panas_p1", "panas_p3", "panas_p5", "panas_p9", "panas_p12", "panas_p14", "panas_p16", "panas_p17", "panas_p19")] 
 CronbachAlpha(panaspospre.df) 
@@ -358,9 +358,16 @@ CronbachAlpha(panasposafter.df) # .80
 ## Negative Affect Score After
 panasnegafter.df <- kayla_processed[ , c("panas_a2", "panas_a4", "panas_a6", "panas_a7", "panas_a8", "panas_a11", "panas_a13", "panas_a15", "panas_a18", "panas_a20")] 
 CronbachAlpha(panasnegafter.df) # .87
+```
+
+```{r PM Reliability, include=FALSE, eval=FALSE}
+pm.df <- kayla_processed[ , c("pm_1", "pm_2", "pm_3")] 
+CronbachAlpha(pm.df) # .78
+```
 
 
-## Rest of Reliabilities
+```{r PS Reliability, include=FALSE, eval=FALSE}
+# Kayla - do this for PS - variable names are in the analysis below - it's identical as PM
 
 ```
 
@@ -943,7 +950,7 @@ cor.test(h6_data$panas2_res, h6_data$pmtot) # negative correlation - basically 0
 cor.test(h6_data$panas1_res, h6_data$pmtot) # this was extra  just for the comparison.
 ```
 
-C) H6-1 Assumptions
+c) H6-1 Assumptions
 ```{r h61-shapiro}
 shapiro.test(h6_data$pmtot)
 ```
