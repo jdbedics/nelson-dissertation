@@ -3,12 +3,12 @@ title: "Data Analysis for Kayla Nelson's Doctoral Dissertation"
 author: "Kayla Nelson"
 date: "`r format(Sys.time(), '%d %B, %Y')`"
 output:
-  pdf_document:
-    toc: yes
   html_document:
     toc: yes
     toc_float: yes
   word_document:
+    toc: yes
+  pdf_document:
     toc: yes
 ---
 
@@ -340,7 +340,7 @@ kayla_processed$panas2_2 <- kayla_processed$panas_a2+  kayla_processed$panas_a4+
 ```
 
 
-```{r PANAS Reliability, include=FALSE, eval=FALSE}
+```{r Reliability, include=FALSE, eval=FALSE}
 # Positive Affect Score - Prior
 panaspospre.df <- kayla_processed[ , c("panas_p1", "panas_p3", "panas_p5", "panas_p9", "panas_p12", "panas_p14", "panas_p16", "panas_p17", "panas_p19")] 
 CronbachAlpha(panaspospre.df) 
@@ -358,6 +358,10 @@ CronbachAlpha(panasposafter.df) # .80
 ## Negative Affect Score After
 panasnegafter.df <- kayla_processed[ , c("panas_a2", "panas_a4", "panas_a6", "panas_a7", "panas_a8", "panas_a11", "panas_a13", "panas_a15", "panas_a18", "panas_a20")] 
 CronbachAlpha(panasnegafter.df) # .87
+
+
+## Rest of Reliabilities
+
 ```
 
 
@@ -635,7 +639,7 @@ h3_final <- h1_t_tests %>%
 
 ```{r h3-test}
 h3_final %>%
-  kable()
+  knitr::kable()
 ```
 
 
