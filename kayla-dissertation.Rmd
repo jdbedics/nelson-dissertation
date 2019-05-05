@@ -366,9 +366,9 @@ CronbachAlpha(pm.df) # .78
 ```
 
 
-```{r PS Reliability, include=FALSE, eval=FALSE}
-# Kayla - do this for PS - variable names are in the analysis below - it's identical as PM
-
+```{r PSM Reliability, include=FALSE, eval=FALSE}
+psm.df <- kayla_processed[ , c("psm_1", "psm_2", "psm_3")] 
+CronbachAlpha(psm.df) # .74
 ```
 
 
