@@ -3,12 +3,12 @@ title: "Data Analysis for Kayla Nelson's Doctoral Dissertation"
 author: "Kayla Nelson"
 date: "`r format(Sys.time(), '%d %B, %Y')`"
 output:
-  word_document:
+  pdf_document:
     toc: yes
   html_document:
     toc: yes
     toc_float: yes
-  pdf_document:
+  word_document:
     toc: yes
 ---
 
@@ -50,10 +50,15 @@ saveRDS(kayla.tb, file = "kayla.rds")
 
 ```{r open data}
 kayla_raw  <- read_rds("kayla.rds")
+
+#create a dataframe that excluded participants that never used substances
+kayla_no_non <- kayla_raw %>%
+  filter(!client_number == "1819" & !client_number == "1820")
 ```
 
 ```{r create processed data}
-# we rename introject first
+#replace "kayla_raw" with "kayla_no_non" to examine differences between results with and without clients that never used substances.
+
 kayla_processed <- kayla_raw %>%
   rename(intcl1b = sasb_1, 
          intcl2b = sasb_6,
