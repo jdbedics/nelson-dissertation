@@ -421,7 +421,7 @@ h1_box <- coefficents_long %>%
   dplyr::select(client_number, sasb_surface, time_f, group_type, affiliation, -value, -time)
 ```
 
-```{r fig-1-h1-boxplot}
+```{r fig-2-h1-boxplot}
 h1_box %>%
   ggplot(aes(time_f, affiliation, color=group_type)) +
   geom_boxplot(aes(color=group_type)) +
@@ -429,7 +429,7 @@ h1_box %>%
   guides(color=guide_legend(title="Group")) +
   labs(x = "Time",
        y = "SASB Affiliation",
-       title = "Figure 1. Boxplots of SASB Affiliation by Interpersonal Surfaces \nand Group Pre and Post Substance Use",
+       title = "Figure 2. Boxplots of SASB Affiliation by Interpersonal Surfaces \nand Group Pre and Post Substance Use",
        caption = "Note. SOST = Significant Other to Subject Transitive; SOSI = Significant Other to Subject Intransitive; \nSSOT = Subject to Significant Other Transitive; SSOI = Subject to Significant Other Intransitive") +
   scale_color_manual(values=c("#AAAAAA", "#60B2FF")) +
   theme(plot.caption = element_text(hjust = 0))
@@ -623,7 +623,7 @@ h3_box <- coefficents_long %>%
   dplyr::select(client_number, sasb_surface, time_f, group_type, affiliation, -value, -time)
 ```
 
-```{r fig3-h3-boxplot}
+```{r fig4-h3-boxplot}
 h3_box %>%
   ggplot(aes(time_f, affiliation)) +
   geom_boxplot(aes(color=group_type)) +
@@ -632,7 +632,7 @@ h3_box %>%
   guides(color=guide_legend(title="Group")) +
   labs(x = "Time",
        y = "SASB Introject Affiliation",
-       title = "Figure 3. Boxplot of SASB Introject Affiliation by Treatment Group  and Pre- and Post-Substance Use",
+       title = "Figure 4. Boxplot of SASB Introject Affiliation by Treatment Group  and Pre- and Post-Substance Use",
        caption = "") +
   scale_color_manual(values=c("#AAAAAA", "#60B2FF")) +
   theme(plot.caption = element_text(hjust = 0))
