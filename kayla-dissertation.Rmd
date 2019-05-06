@@ -566,7 +566,9 @@ h2_data_na <- h2_data %>%
 ```{r h2-test}
 #t.test(h2_data_na$sosicl6p ~ h2_data_na$doc_fa) # pre
 # data was not normally distributed.
-wilcox.test(h2_data_na$sosicl6p ~ h2_data_na$doc_fa)
+h2_data_na %>%
+  summarise(h2_w = wilcox.test(sosicl6p ~ doc_fa)$statistic,
+            h2_sig = wilcox.test(sosicl6p ~ doc_fa)$p.value)
 ```
 
 ## 3. Means and SD for H2
@@ -577,7 +579,7 @@ h2_data_na %>%
             sd = sd(sosicl6p))
 ```
 
-## 4. Assumptions for h2
+## 4. Assumptions for H2
 a) Shapiro for H2
 ```{r h2-shapiro}
 shapiro.test(h2_data_na$sosicl6p) # violate so we'll use non-parametric
@@ -890,16 +892,16 @@ car::leveneTest(panas_processed$panas1_res, panas_processed$group_type) #ok
 Three exploratory analyses examined change in relationship and emotions following substance use as they are associated with parental monitoring, peer acceptance, and diagnostic group.  Due to no variability in diagnostic group, questions regarding diagnostic group were dropped.  Three questions examined were as follows:
 
 1. H6-1: Higher levels of parental monitoring would be associated with a decrease in negative affect following substance use.
-  a) Scatterplot of Parental Monitoring and Change in PANAS (Negative and Positive Affect) regardless of treatment group
-  b) H6-1 Pearson Correlation Coefficients
-  c) H6-1 Assumptions
+      a) Scatterplot of Parental Monitoring and Change in PANAS (Negative and Positive Affect) regardless of treatment group
+      b) H6-1 Pearson Correlation Coefficients
+      c) H6-1 Assumptions
 2. H6-2: Higher levels of peer acceptance would be associated with an increase in positive affect substance use.
-  a) Scatterplot of Peer Support and Change in PANAS (Negative and Positive Affect) regardless of treatment group
-  b) H6-2 Pearson Correlation Coefficients
-  c) H6-2 Assumptions
+      a) Scatterplot of Peer Support and Change in PANAS (Negative and Positive Affect) regardless of treatment group
+      b) H6-2 Pearson Correlation Coefficients
+      c) H6-2 Assumptions
 3. H6-3: Higher levels of peer acceptance would be associated with an increase in perceived affiliation in the actions of a significant other towards the participant following substance use.
-  a) H6-3 Scatterplot of Peer Support and change in perception of Significant Other acting towards Participant with Affiliation following substance use
-  b) H6-3 Pearson Correlation Coefficient
+      a) H6-3 Scatterplot of Peer Support and change in perception of Significant Other acting towards Participant with Affiliation following substance use
+      b) H6-3 Pearson Correlation Coefficient
 
 ## 1. H6-1
 ```{r h6-wrangling}
@@ -951,8 +953,11 @@ h6_data %>%
 
 b) H6-1 Pearson Correlation Coefficients
 ```{r h61-correlations}
-cor.test(h6_data$panas2_res, h6_data$pmtot) # negative correlation - basically 0.0 - ns
-cor.test(h6_data$panas1_res, h6_data$pmtot) # this was extra  just for the comparison.
+h6_data %>%
+  summarise(neg_pmtot_cor = cor.test(panas2_res, pmtot)$estimate,
+            neg_pmtot_sig = cor.test(panas2_res, pmtot)$p.value,
+            pos_pmtot_cor = cor.test(panas1_res, pmtot)$estimate,
+            pos_pmtot_sig = cor.test(panas1_res, pmtot)$p.value)
 ```
 
 c) H6-1 Assumptions
@@ -985,8 +990,11 @@ h6_data %>%
 
 b) H6-2 Pearson Correlation Coefficients
 ```{r h62-correlations}
-cor.test(h6_data$panas2_res, h6_data$psmtot)
-cor.test(h6_data$panas1_res, h6_data$psmtot) # positive correlation but not significant
+h6_data %>%
+  summarise(neg_psmtot_cor = cor.test(panas2_res, psmtot)$estimate,
+            neg_psmtot_sig = cor.test(panas2_res, psmtot)$p.value,
+            pos_psmtot_cor = cor.test(panas1_res, psmtot)$estimate,
+            pos_psmtot_sig = cor.test(panas1_res, psmtot)$p.value)
 ```
 
 C) H6-2 Assumptions
@@ -1022,7 +1030,9 @@ h63_data %>%
 
 b) H6-3 Pearson Correlation Coefficient
 ```{r}
-cor.test(h63_data$surf_5, h63_data$psmtot) # n.s 
+h63_data %>%
+  summarise(neg_pmtot_cor = cor.test(surf_5, psmtot)$estimate,
+            neg_pmtot_sig = cor.test(surf_5, psmtot)$p.value)
 ```
 
 
