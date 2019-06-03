@@ -548,11 +548,10 @@ h2_box %>%
   guides(color=guide_legend(title="Group")) +
   labs(x = "Time",
        y = "Sulk and Scurry",
-       title = "Figure 2. Boxplots of SASB Cluster 6 Significant Other Sulks and Scurrys \nand Drug Type Pre and Post Substance Use",
+       title = "Figure 3. Boxplots of SASB Cluster 6 Significant Other Sulks and Scurrys \nand Drug Type Pre and Post Substance Use",
        caption = "") +
   scale_color_manual(values=c("#AAAAAA", "#60B2FF")) +
-  theme(plot.caption = element_text(hjust = 0)) +
-  geom_jitter()
+  theme(plot.caption = element_text(hjust = 0))
 ```
 
 ## 2. Independent T-test for H2
@@ -755,11 +754,11 @@ panas_data %>%
     mutate(panas_negative = factor(panas_negative, labels = c("Pre", "Post"))) %>%
   ggplot(aes(x=panas_negative, y=score)) +
   geom_boxplot() +
-  geom_jitter(aes(color=panas_negative), size=2) +
+  #geom_jitter(aes(color=panas_negative), size=2) +
   facet_wrap(~ group_type) +
   scale_color_manual(values=c("#12100F", "#60B2FF"), name="Negative Affect") +
   labs(x="Negative Affect",
-       title = "Figure 4. Change in Negative Affect (PANAS) Prior and After Substance Use") +
+       title = "Figure 5. Change in Negative Affect (PANAS) Prior and After Substance Use") +
   theme(legend.position = "none")
 ```
 
@@ -834,11 +833,11 @@ panas_data %>%
     mutate(panas_positive = factor(panas_positive, labels = c("Pre", "Post"))) %>%
   ggplot(aes(x=panas_positive, y=score)) +
   geom_boxplot() +
-  geom_jitter(aes(color=panas_positive), size=2) +
+  #geom_jitter(aes(color=panas_positive), size=2) +
   facet_wrap(~ group_type) +
   scale_color_manual(values=c("#12100F", "#60B2FF"), name="Positive Affect") +
   labs(x="Positive",
-       title = "Figure 5. Change in Positive Affect (PANAS) Prior and After Substance Use") +
+       title = "Figure 6. Change in Positive Affect (PANAS) Prior and After Substance Use") +
   theme(legend.position = "none")
 ```
 
@@ -945,7 +944,7 @@ h6_data %>%
   guides(color=guide_legend(title="PANAS Type")) +
   labs(x = "Residual Change in PANAS",
        y = "Parental Monitoring Total",
-       title = "Figure 6. Scatter plot of parental monitor \n by change in positive and negative PANAS",
+       title = "Figure 7. Scatter plot of parental monitor by change in positive and negative PANAS (95% CI)",
        caption = "") +
   scale_color_manual(values=c("#AAAAAA", "#60B2FF")) +
   theme(plot.caption = element_text(hjust = 0))
@@ -982,7 +981,7 @@ h6_data %>%
   guides(color=guide_legend(title="PANAS Type")) +
   labs(x = "Residual Change in PANAS",
        y = "Peer Support Total",
-       title = "Figure 7. Scatter plot of peer support \nby change in positive and negative PANAS",
+       title = "Figure 8. Scatter plot of peer support by change in positive and negative PANAS (95% CI)",
        caption = "") +
   scale_color_manual(values=c("#AAAAAA", "#60B2FF")) +
   theme(plot.caption = element_text(hjust = 0))
